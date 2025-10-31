@@ -6,8 +6,20 @@
 #include <fstream>
 #include <iostream>
 #include "util.h"
+#include <limits>
 
 int readFile(std::string fileName);
 int writeFile(std::string fileName);
 
+// Linked List Node
+struct LineNode
+{
+    std::string line;
+    LineNode *nextLine;
+    LineNode(std::string line)
+    {
+        this->line = line;
+        nextLine = nullptr;
+    }
+};
 #endif
