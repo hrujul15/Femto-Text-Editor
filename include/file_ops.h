@@ -7,10 +7,11 @@
 #include <iostream>
 #include "util.h"
 #include <limits>
-
+#include <stack>
 int readFile(std::string fileName);
-int writeFile(std::string fileName);
+int writeFile(std::string fileName, bool editing = false);
 int editFile(std::string fileName);
+
 // Linked List Node
 struct LineNode
 {
@@ -21,5 +22,18 @@ struct LineNode
         this->line = line;
         nextLine = nullptr;
     }
+};
+
+int traverseAndPrint(LineNode *trav);
+
+struct Action
+{
+    enum Ops
+    {
+        ADD,
+        EDIT,
+        INSERT,
+        DELETE
+    } type;
 };
 #endif
