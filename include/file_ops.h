@@ -10,12 +10,12 @@
 
 int readFile(std::string fileName);
 int writeFile(std::string fileName);
-
+int editFile(std::string fileName);
 // Linked List Node
 struct LineNode
 {
     std::string line;
-    LineNode *nextLine;
+    LineNode *nextLine = nullptr;
     LineNode(std::string line)
     {
         this->line = line;
