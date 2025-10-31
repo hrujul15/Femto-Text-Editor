@@ -3,6 +3,7 @@
 
 #include "main_menu.h"
 #include "file_ops.h"
+#include "clipboard.h"
 void welcome()
 {
     int option;
@@ -12,6 +13,8 @@ void welcome()
     std::cout << "0: Read a file" << std::endl;
     std::cout << "1: Create a file and edit it" << std::endl;
     std::cout << "2: Open a file and edit it" << std::endl;
+    std::cout << "3: Copy text from file" << std::endl;
+    std::cout << "4: Paste text into file" << std::endl;
     cleanInput(option);
     chooseOperation(option);
 }
@@ -60,6 +63,32 @@ void chooseOperation(int option)
             std::cout << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a line at particular line number" << std::endl;
             editFile(fileName);
             // Do more operations
+            std::cout << "Please choose an operation to perform: ";
+            cleanInput(option);
+            break;
+        }
+        case 3:
+         {
+            std::string fileName;
+            int startLine, endLine;
+            std::cout << "Enter file name to copy from: ";
+            std::cin >> fileName;
+            std::cout << "Enter start and end line numbers to copy: ";
+            std::cin >> startLine >> endLine;
+            copyFromFile(fileName, startLine, endLine);
+            std::cout << "Please choose an operation to perform: ";
+            cleanInput(option);
+            break;
+        }
+        case 4: 
+        {
+            std::string fileName;
+            int lineNumber;
+            std::cout << "Enter file name to paste into: ";
+            std::cin >> fileName;
+            std::cout << "Enter line number where to paste: ";
+            std::cin >> lineNumber;
+            pasteToFile(fileName, lineNumber);
             std::cout << "Please choose an operation to perform: ";
             cleanInput(option);
             break;
