@@ -39,3 +39,9 @@
 
 # debug information files
 *.dwo
+
+# Project executables
+Femto-Text-Editor
+
+#Text files
+*.txt
