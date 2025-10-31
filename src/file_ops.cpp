@@ -21,14 +21,60 @@ int readFile(std::string fileName)
     file.close();
     return 0;
 }
-int editFile(std::string fileName){
+int editFile(std::string fileName)
+{
+    // If editing reuse writefile function, and instead append at end
+    writeFile(fileName, true);
     return 0;
 }
-int writeFile(std::string fileName)
+int writeFile(std::string fileName, bool editing)
 {
+    // Creating stack for undo-redo ops
+    std::stack<LineNode *> Undo;
+    std::stack<LineNode *> Redo;
 
-    // Create the file
-    std::ofstream file(fileName);
+    // Storing input text to linked lists for editing previous lines
+    LineNode *linesHead = nullptr;
+    LineNode *current = linesHead;
+    // Create the file or open in case editing a pre-existing file
+    std::ios_base::openmode mode;
+    int currentLine = 0;
+    if (editing)
+    {
+        // store the pre-existing lines in linked list
+        //  Open the text file
+        std::ifstream file(fileName);
+        // Error opening the file
+        if (!file.is_open())
+        {
+            std::cerr << "Error Opening the File!!!" << std::endl;
+            return 1;
+        }
+        // Storing contents of a line in a string then printing it
+        // and adding to linked list as well
+        std::string line;
+        while (std::getline(file, line))
+        {
+            std::cout << ++currentLine << ": ";
+            std::cout << line << std::endl;
+
+            if (!linesHead)
+            {
+                linesHead = new LineNode(line);
+                current = linesHead;
+            }
+            else
+            {
+                current->nextLine = new LineNode(line);
+                current = current->nextLine;
+            }
+        }
+        file.close();
+        mode = std::ios::app;
+    }
+    else
+        mode = std::ios::out;
+    std::fstream file(fileName, mode);
 
     // Error opening the file
     if (!file.is_open())
@@ -37,10 +83,6 @@ int writeFile(std::string fileName)
         return 1;
     }
 
-    // Storing input text to linked lists for editing previous lines
-    LineNode *linesHead = nullptr;
-    LineNode *current = linesHead;
-    int currentLine = 0;
     // Write to file
     std::string line;
     do
@@ -57,13 +99,32 @@ int writeFile(std::string fileName)
             }
             else
             {
+                // currentLine = 1;
+                if (!current)
+                {
+                    current = linesHead;
+                    while (current->nextLine)
+                    {
+                        current = current->nextLine;
+                        // ++currentLine;
+                    }
+                }
                 current->nextLine = new LineNode(line);
                 current = current->nextLine;
             }
         }
+        else if (line == "/u")
+        {
+            // Implemnting undo
+            std::cout << "Unimplemented feature!" << std::endl;
+        }
+        else if (line == "/r")
+        {
+            std::cout << "Unimplemented feature!" << std::endl;
+        }
         else if (line == "/d")
         {
-            // If delet flag triggered get line number to delet
+            // If delete flag triggered get line number to delete
             int lineNumber;
 
             std::cout << "Enter line number to delete: ";
@@ -76,13 +137,14 @@ int writeFile(std::string fileName)
             else
             {
                 LineNode *lineFinder = linesHead;
-                if (lineNumber <= 1)
+                if (lineNumber <= 1 or currentLine <= 2)
                 {
                     // Delete Line
                     LineNode *deletedLine = linesHead;
                     linesHead = linesHead->nextLine;
                     delete deletedLine;
                     --currentLine;
+                    current = nullptr;
                 }
                 else
                 {
@@ -91,6 +153,7 @@ int writeFile(std::string fileName)
                         if (!lineFinder->nextLine)
                         {
                             // If line number exceeds the actual amount of lines, edit last line
+                            // ++currentLine;
                             break;
                         }
                         else
@@ -101,6 +164,15 @@ int writeFile(std::string fileName)
                     // If we deleting last line then deletedLine == nullptr
                     if (!deletedLine)
                     {
+                        // if linefinder = last node deleting it will cause problems, dangling ptr
+                        // so going to second last and then deleting
+                        // but if there is one node then even this can cause problems
+                        // so this base case "if (lineNumber <= 1 or currentLine <= 2)" at start
+                        LineNode *starter = linesHead;
+                        while(starter->nextLine != lineFinder){
+                            starter = starter->nextLine;
+                        }
+                        starter->nextLine = nullptr;
                         delete lineFinder;
                     }
                     else
@@ -110,6 +182,11 @@ int writeFile(std::string fileName)
                     }
                     --currentLine;
                 }
+
+                // Reprint contents of file
+                --currentLine;
+                currentLine = traverseAndPrint(linesHead);
+                current = nullptr;
             }
         }
         else if (line == "/i")
@@ -126,6 +203,8 @@ int writeFile(std::string fileName)
                 std::getline(std::cin, line);
                 linesHead = new LineNode(line);
                 current = linesHead;
+                currentLine = traverseAndPrint(linesHead);
+                // current = nullptr;
             }
             else
             {
@@ -158,20 +237,32 @@ int writeFile(std::string fileName)
                     insertedLine->nextLine = lineFinder->nextLine;
                     lineFinder->nextLine = insertedLine;
                 }
+                // Reprint contents
+                currentLine = traverseAndPrint(linesHead);
+                // current = nullptr;
             }
         }
         else if (line == "/cmd")
         {
+            file.close(); // Close previous stream
+            file.open(fileName, std::ios::out);
             // If user wants to return to main menu, add linked list buffer to file, delete linked list
+            LineNode *root = linesHead;
             while (linesHead)
             {
                 file << linesHead->line << std::endl;
-
-                LineNode *prev = linesHead;
                 linesHead = linesHead->nextLine;
-                prev->nextLine = nullptr;
+            }
+            while (root)
+            {
+                LineNode *prev = root;
+                root = root->nextLine;
                 delete prev;
             }
+            linesHead = nullptr;
+            current = nullptr;
+
+            file.close();
         }
         else if (line == "/e")
         {
@@ -188,12 +279,13 @@ int writeFile(std::string fileName)
                 std::getline(std::cin, line);
                 linesHead = new LineNode(line);
                 current = linesHead;
+                currentLine = traverseAndPrint(linesHead);
             }
             else
             {
                 LineNode *lineFinder = linesHead;
                 std::cout << "Input the line:" << std::endl;
-                std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
+                std::cout << std::max(1, std::min(lineNumber, currentLine - 1)) << ": ";
                 if (lineNumber <= 1)
                 {
                     // Get the new line
@@ -216,9 +308,24 @@ int writeFile(std::string fileName)
                     std::getline(std::cin, line);
                     lineFinder->line = line;
                 }
+                currentLine = traverseAndPrint(linesHead);
+                // current = nullptr;
             }
         }
 
     } while (line != "/cmd");
+
     return 0;
+}
+int traverseAndPrint(LineNode *trav)
+{
+    int travLine = 0;
+    std::cout << std::endl;
+    while (trav)
+    {
+        std::cout << ++travLine << ": ";
+        std::cout << trav->line << std::endl;
+        trav = trav->nextLine;
+    }
+    return travLine;
 }
