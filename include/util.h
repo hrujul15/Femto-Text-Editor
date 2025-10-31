@@ -1,6 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
-
+#include <limits>
 template <typename T>
 void cleanInput(T &input)
 {

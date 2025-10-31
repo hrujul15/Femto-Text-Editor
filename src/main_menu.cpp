@@ -44,8 +44,21 @@ void chooseOperation(int option)
             std::cout << "Type the path to the file to create and edit: " << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line somewhere" << std::endl;
+            std::cout << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a line at particular line number" << std::endl;
             writeFile(fileName);
+            // Do more operations
+            std::cout << "Please choose an operation to perform: ";
+            cleanInput(option);
+            break;
+        }
+        case 2:
+        {
+            std::string fileName;
+            std::cout << "Type the path to the file to open and edit: " << std::endl;
+            std::cin >> fileName;
+            std::cin.ignore(); // To clear input buffer
+            std::cout << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a line at particular line number" << std::endl;
+            editFile(fileName);
             // Do more operations
             std::cout << "Please choose an operation to perform: ";
             cleanInput(option);

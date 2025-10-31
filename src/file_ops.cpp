@@ -21,7 +21,9 @@ int readFile(std::string fileName)
     file.close();
     return 0;
 }
-
+int editFile(std::string fileName){
+    return 0;
+}
 int writeFile(std::string fileName)
 {
 
@@ -45,7 +47,7 @@ int writeFile(std::string fileName)
     {
         std::cout << ++currentLine << ": ";
         std::getline(std::cin, line);
-        if (line != "/cmd" and line != "/i" and line != "/e")
+        if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d")
         {
 
             if (!linesHead)
@@ -59,6 +61,57 @@ int writeFile(std::string fileName)
                 current = current->nextLine;
             }
         }
+        else if (line == "/d")
+        {
+            // If delet flag triggered get line number to delet
+            int lineNumber;
+
+            std::cout << "Enter line number to delete: ";
+            cleanInput(lineNumber);
+            if (!linesHead)
+            {
+                std::cout << "Nothing to delete!" << std::endl;
+                --currentLine;
+            }
+            else
+            {
+                LineNode *lineFinder = linesHead;
+                if (lineNumber <= 1)
+                {
+                    // Delete Line
+                    LineNode *deletedLine = linesHead;
+                    linesHead = linesHead->nextLine;
+                    delete deletedLine;
+                    --currentLine;
+                }
+                else
+                {
+                    for (int i = 1; i < std::max(1, lineNumber - 1); ++i)
+                    {
+                        if (!lineFinder->nextLine)
+                        {
+                            // If line number exceeds the actual amount of lines, edit last line
+                            break;
+                        }
+                        else
+                            lineFinder = lineFinder->nextLine;
+                    }
+                    // Delete line
+                    LineNode *deletedLine = lineFinder->nextLine;
+                    // If we deleting last line then deletedLine == nullptr
+                    if (!deletedLine)
+                    {
+                        delete lineFinder;
+                    }
+                    else
+                    {
+                        lineFinder->nextLine = deletedLine->nextLine;
+                        delete deletedLine;
+                    }
+                    --currentLine;
+                }
+            }
+        }
         else if (line == "/i")
         {
             // If insert flag triggered get line number to insert
@@ -69,7 +122,7 @@ int writeFile(std::string fileName)
             if (!linesHead)
             {
                 std::cout << "Input the line:" << std::endl;
-                std::cout << currentLine << ": ";
+                std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 std::getline(std::cin, line);
                 linesHead = new LineNode(line);
                 current = linesHead;
@@ -78,8 +131,8 @@ int writeFile(std::string fileName)
             {
                 LineNode *lineFinder = linesHead;
                 std::cout << "Input the line:" << std::endl;
-                std::cout << currentLine << ": ";
-                if (lineNumber == 1)
+                std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
+                if (lineNumber <= 1)
                 {
                     // Get the new line
                     std::getline(std::cin, line);
@@ -123,7 +176,47 @@ int writeFile(std::string fileName)
         else if (line == "/e")
         {
             // Edit a particular line
-            std::cout << "Feature not implemented yet!" << std::endl;
+            // If edit flag triggered get line number to edit
+            int lineNumber;
+
+            std::cout << "Enter line number to edit: ";
+            cleanInput(lineNumber);
+            if (!linesHead)
+            {
+                std::cout << "Input the line:" << std::endl;
+                std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
+                std::getline(std::cin, line);
+                linesHead = new LineNode(line);
+                current = linesHead;
+            }
+            else
+            {
+                LineNode *lineFinder = linesHead;
+                std::cout << "Input the line:" << std::endl;
+                std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
+                if (lineNumber <= 1)
+                {
+                    // Get the new line
+                    std::getline(std::cin, line);
+                    linesHead->line = line;
+                }
+                else
+                {
+                    for (int i = 1; i < std::max(1, lineNumber); ++i)
+                    {
+                        if (!lineFinder->nextLine)
+                        {
+                            // If line number exceeds the actual amount of lines, edit last line
+                            break;
+                        }
+                        else
+                            lineFinder = lineFinder->nextLine;
+                    }
+                    // Get the new line
+                    std::getline(std::cin, line);
+                    lineFinder->line = line;
+                }
+            }
         }
 
     } while (line != "/cmd");
