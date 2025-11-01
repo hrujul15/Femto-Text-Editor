@@ -45,3 +45,5 @@ Femto-Text-Editor
 
 #Text files
 *.txt
+# build files
+*.bat
