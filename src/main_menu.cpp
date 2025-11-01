@@ -4,6 +4,7 @@
 #include "main_menu.h"
 #include "file_ops.h"
 #include "clipboard.h"
+#include "search.h"
 void welcome()
 {
     int option;
@@ -14,7 +15,10 @@ void welcome()
     std::cout << "1: Create a file and edit it" << std::endl;
     std::cout << "2: Open a file and edit it" << std::endl;
     std::cout << "3: Copy text from file" << std::endl;
-    std::cout << "4: Paste text into file" << RESET << std::endl;
+    std::cout << "4: Paste text into file" << std::endl;
+    std::cout << "5: Search in file" << RESET << std::endl;
+
+
     cleanInput(option);
     chooseOperation(option);
 }
@@ -93,6 +97,35 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
+        case 5:
+        {
+            std::string fileName, mode;
+            std::cout << CYAN << "Enter file name to search: " << RESET;
+            std::cin >> fileName;
+            std::cout << CYAN << "Choose search mode (/f = find word, /m = most frequent word): " << RESET;
+            std::cin >> mode;
+
+            if (mode == "/f")
+            {
+                std::string word;
+                std::cout << CYAN << "Enter word to find: " << RESET;
+                std::cin >> word;
+                findWordInFile(fileName, word);
+            }
+            else if (mode == "/m")
+            {
+                findMostFrequentWord(fileName);
+            }
+            else
+            {
+                std::cout << RED << "Invalid mode. Use /f or /m." << RESET << std::endl;
+            }
+
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+
         default:
         {
             std::cout << RED << "Invalid option selected, reselect!" << RESET << std::endl;
