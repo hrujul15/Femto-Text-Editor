@@ -18,7 +18,8 @@ void welcome()
     std::cout << "3: Copy text from file" << std::endl;
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
-    std::cout << "6: Display File Statistics" << RESET << std::endl;
+    std::cout << "6: Display File Statistics" << std::endl;
+    std::cout << "7: Find and Replace in File" << RESET << std::endl;
 
     cleanInput(option);
     chooseOperation(option);
@@ -135,6 +136,22 @@ void chooseOperation(int option)
             
             countStats(fileName);
             
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 7:
+        {
+            std::string fileName, target, replacement;
+            std::cout << CYAN << "Enter file name to search: " << RESET;
+            std::cin >> fileName;
+            std::cout << CYAN << "Enter word to find (case-sensitive): " << RESET;
+            std::cin >> target;
+            std::cout << CYAN << "Enter replacement word: " << RESET;
+            std::cin >> replacement;
+
+            findAndReplaceInFile(fileName, target, replacement);
+
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
