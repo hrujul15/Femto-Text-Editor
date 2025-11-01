@@ -5,6 +5,7 @@
 #include "file_ops.h"
 #include "clipboard.h"
 #include "search.h"
+#include "stats.h"
 void welcome()
 {
     int option;
@@ -16,8 +17,8 @@ void welcome()
     std::cout << "2: Open a file and edit it" << std::endl;
     std::cout << "3: Copy text from file" << std::endl;
     std::cout << "4: Paste text into file" << std::endl;
-    std::cout << "5: Search in file" << RESET << std::endl;
-
+    std::cout << "5: Search in file" << std::endl;
+    std::cout << "6: Display File Statistics" << RESET << std::endl;
 
     cleanInput(option);
     chooseOperation(option);
@@ -121,6 +122,19 @@ void chooseOperation(int option)
                 std::cout << RED << "Invalid mode. Use /f or /m." << RESET << std::endl;
             }
 
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 6:
+        {
+            std::string fileName;
+            std::cout << CYAN << "Enter file name to search: " << RESET;
+            std::cin >> fileName;
+            std::cout << CYAN << "Here are the Text Statistics:" << RESET << std::endl;
+            
+            countStats(fileName);
+            
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
