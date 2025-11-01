@@ -9,7 +9,7 @@ int readFile(std::string fileName)
     // Error opening the file
     if (!file.is_open())
     {
-        std::cerr << "Error Opening the File!!!" << std::endl;
+        std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
         return 1;
     }
 
@@ -19,12 +19,14 @@ int readFile(std::string fileName)
         std::cout << line << std::endl;
 
     file.close();
+    std::cout << RESET;
     return 0;
 }
 int editFile(std::string fileName)
 {
     // If editing reuse writefile function, and instead append at end
     writeFile(fileName, true);
+    std::cout << RESET;
     return 0;
 }
 int writeFile(std::string fileName, bool editing)
@@ -47,7 +49,7 @@ int writeFile(std::string fileName, bool editing)
         // Error opening the file
         if (!file.is_open())
         {
-            std::cerr << "Error Opening the File!!!" << std::endl;
+            std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
             return 1;
         }
         // Storing contents of a line in a string then printing it
@@ -79,7 +81,7 @@ int writeFile(std::string fileName, bool editing)
     // Error opening the file
     if (!file.is_open())
     {
-        std::cerr << "Error Opening the File!!!" << std::endl;
+        std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
         return 1;
     }
 
@@ -127,15 +129,15 @@ int writeFile(std::string fileName, bool editing)
             // If delete flag triggered get line number to delete
             int lineNumber;
 
-            std::cout << "Enter line number to delete: ";
-            cleanInput(lineNumber);
             if (!linesHead)
             {
-                std::cout << "Nothing to delete!" << std::endl;
+                std::cout << RED << "Nothing to delete!" << RESET << std::endl;
                 --currentLine;
             }
             else
             {
+                std::cout << GREEN << "Enter line number to delete: " << RESET;
+                cleanInput(lineNumber);
                 LineNode *lineFinder = linesHead;
                 if (lineNumber <= 1 or currentLine <= 2)
                 {
@@ -169,7 +171,8 @@ int writeFile(std::string fileName, bool editing)
                         // but if there is one node then even this can cause problems
                         // so this base case "if (lineNumber <= 1 or currentLine <= 2)" at start
                         LineNode *starter = linesHead;
-                        while(starter->nextLine != lineFinder){
+                        while (starter->nextLine != lineFinder)
+                        {
                             starter = starter->nextLine;
                         }
                         starter->nextLine = nullptr;
@@ -194,11 +197,11 @@ int writeFile(std::string fileName, bool editing)
             // If insert flag triggered get line number to insert
             int lineNumber;
 
-            std::cout << "Enter line number to insert: ";
+            std::cout << GREEN << "Enter line number to insert: " << RESET;
             cleanInput(lineNumber);
             if (!linesHead)
             {
-                std::cout << "Input the line:" << std::endl;
+                std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 std::getline(std::cin, line);
                 linesHead = new LineNode(line);
@@ -209,7 +212,7 @@ int writeFile(std::string fileName, bool editing)
             else
             {
                 LineNode *lineFinder = linesHead;
-                std::cout << "Input the line:" << std::endl;
+                std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 if (lineNumber <= 1)
                 {
@@ -270,11 +273,11 @@ int writeFile(std::string fileName, bool editing)
             // If edit flag triggered get line number to edit
             int lineNumber;
 
-            std::cout << "Enter line number to edit: ";
+            std::cout << GREEN << "Enter line number to edit: " << RESET;
             cleanInput(lineNumber);
             if (!linesHead)
             {
-                std::cout << "Input the line:" << std::endl;
+                std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 std::getline(std::cin, line);
                 linesHead = new LineNode(line);
@@ -284,7 +287,7 @@ int writeFile(std::string fileName, bool editing)
             else
             {
                 LineNode *lineFinder = linesHead;
-                std::cout << "Input the line:" << std::endl;
+                std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine - 1)) << ": ";
                 if (lineNumber <= 1)
                 {
@@ -314,7 +317,7 @@ int writeFile(std::string fileName, bool editing)
         }
 
     } while (line != "/cmd");
-
+    std::cout << RESET;
     return 0;
 }
 int traverseAndPrint(LineNode *trav)
@@ -327,5 +330,6 @@ int traverseAndPrint(LineNode *trav)
         std::cout << trav->line << std::endl;
         trav = trav->nextLine;
     }
+
     return travLine;
 }

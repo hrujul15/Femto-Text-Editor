@@ -1,6 +1,17 @@
 #ifndef UTIL_H
 #define UTIL_H
 #include <limits>
+#include <iostream>
+// Colored text for prettty print
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+#define WHITE "\033[37m"
+
 template <typename T>
 void cleanInput(T &input)
 {
@@ -11,7 +22,7 @@ void cleanInput(T &input)
         {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input! Please enter again: ";
+            std::cout << RED << "Invalid input! Please enter again: " << RESET;
         }
         else
         {
@@ -19,6 +30,7 @@ void cleanInput(T &input)
             break;
         }
     }
+    std::cout << RESET;
 }
 // CLearing input buffer and protection against invalid inputs
 #endif
