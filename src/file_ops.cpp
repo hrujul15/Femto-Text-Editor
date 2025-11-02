@@ -91,7 +91,7 @@ int writeFile(std::string fileName, bool editing)
     {
         std::cout << ++currentLine << ": ";
         std::getline(std::cin, line);
-        if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d")
+        if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d" and line != "/D")
         {
 
             if (!linesHead)
@@ -124,7 +124,7 @@ int writeFile(std::string fileName, bool editing)
         {
             std::cout << "Unimplemented feature!" << std::endl;
         }
-        else if (line == "/d")
+        else if (line == "/D")
         {
             // If delete flag triggered get line number to delete
             int lineNumber;
@@ -192,6 +192,73 @@ int writeFile(std::string fileName, bool editing)
                 current = nullptr;
             }
         }
+        //delete a range of lines
+        else if (line == "/d")
+        {
+        if (!linesHead)
+        {
+        std::cout << RED << "Nothing to delete!" << RESET << std::endl;
+        --currentLine;
+        }
+        else
+        {
+        int startLine, endLine;
+        std::cout << GREEN << "Enter starting and ending line numbers to delete (e.g., 3 8): " << RESET;
+
+        // Read both numbers on the same line
+        std::cin >> startLine >> endLine;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
+
+        
+        if (startLine > endLine)
+            std::swap(startLine, endLine);
+        if (startLine < 1)
+            startLine = 1;
+
+        LineNode *temp = linesHead;
+        LineNode *prev = nullptr;
+        int lineNum = 1;
+
+        while (temp && lineNum < startLine)
+        {
+            prev = temp;
+            temp = temp->nextLine;
+            ++lineNum;
+        }
+
+        if (!temp)
+        {
+            std::cout << RED << "Invalid range " << RESET << std::endl;
+            currentLine = traverseAndPrint(linesHead);
+            current = nullptr;
+            continue;
+        }
+
+        // Delete between startLine and endLine
+        LineNode *afterEnd = temp;
+        while (afterEnd and lineNum <= endLine)
+        {
+            LineNode *toDelete = afterEnd;
+            afterEnd = afterEnd->nextLine;
+            delete toDelete;
+            ++lineNum;
+        }
+
+        
+        if (prev)
+            prev->nextLine = afterEnd;
+        else
+            linesHead = afterEnd;
+
+        std::cout << GREEN << "Deleted lines from " << startLine << " to " << endLine << "." << RESET << std::endl;
+
+        // Reprint updated file
+        currentLine = traverseAndPrint(linesHead);
+        current = nullptr;
+    }
+}
+
+
         else if (line == "/i")
         {
             // If insert flag triggered get line number to insert
