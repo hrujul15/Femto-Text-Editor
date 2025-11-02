@@ -18,8 +18,10 @@ void welcome()
     std::cout << "3: Copy text from file" << std::endl;
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
-    std::cout << "6: Display File Statistics" << std::endl;
-    std::cout << "7: Find and Replace in File" << RESET << std::endl;
+    std::cout << "6: Display File Statistics" << std::endl;////////
+    
+    std::cout << "7: Find and Replace in File" <<  std::endl;
+    std::cout << "8: Print this Command Pallete" << RESET << std::endl;////////
 
     cleanInput(option);
     chooseOperation(option);
@@ -53,7 +55,7 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to create and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a line at particular line number" << RESET << std::endl;
+           std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             writeFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
@@ -66,7 +68,7 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to open and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a line at particular line number" << RESET << std::endl;
+            std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             editFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
@@ -156,7 +158,23 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
-
+        case 8:
+        {
+        std::cout << MAGENTA << "Welcome to Femto-Text-Editor!" << RESET << std::endl;
+        std::cout << BLUE << "Please choose an operation to perform:" << std::endl;
+        std::cout << "-1: Exit" << std::endl;
+        std::cout << "0: Read a file" << std::endl;
+        std::cout << "1: Create a file and edit it" << std::endl;
+        std::cout << "2: Open a file and edit it" << std::endl;
+        std::cout << "3: Copy text from file" << std::endl;
+        std::cout << "4: Paste text into file" << std::endl;
+        std::cout << "5: Search in file" << std::endl;
+        std::cout << "6: Display File Statistics" << std::endl;
+        std::cout << "7: Find and Replace in File" <<  std::endl;
+        std::cout << "8: Print this Command Pallete" << RESET << std::endl;
+        cleanInput(option);
+        break;
+        }
         default:
         {
             std::cout << RED << "Invalid option selected, reselect!" << RESET << std::endl;
