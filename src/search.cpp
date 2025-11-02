@@ -48,6 +48,7 @@ void findWordInFile(const std::string &filePath, const std::string &word)
         std::cout << YELLOW << "No matches found for '" << word << "'." << RESET << "\n";
 
     fin.close();
+    return;
 }
 
 // Find the most frequent word in the file
@@ -97,4 +98,5 @@ void findMostFrequentWord(const std::string &filePath)
 
     std::cout << CYAN << "Most frequent word: " << WHITE << mostFrequent
               << CYAN << " (" << maxCount << " times)" << RESET << "\n";
+    return;
 }

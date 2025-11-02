@@ -5,6 +5,7 @@
 #include "file_ops.h"
 #include "clipboard.h"
 #include "search.h"
+
 void welcome()
 {
     int option;
@@ -14,9 +15,8 @@ void welcome()
     std::cout << "0: Read a file" << std::endl;
     std::cout << "1: Create a file and edit it" << std::endl;
     std::cout << "2: Open a file and edit it" << std::endl;
-    std::cout << "3: Copy text from file" << std::endl;
-    std::cout << "4: Paste text into file" << std::endl;
-    std::cout << "5: Search in file" << RESET << std::endl;
+    std::cout << "3: Copy/Paste text from file" << std::endl;
+    std::cout << "4: Search in file" << RESET << std::endl;
 
 
     cleanInput(option);
@@ -71,33 +71,58 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
-        case 3:
+   case 3:
         {
-            std::string fileName;
-            int startLine, endLine;
-            std::cout << CYAN << "Enter file name to copy from: " << RESET;
-            std::cin >> fileName;
-            std::cout << CYAN << "Enter start and end line numbers to copy: " << RESET;
-            std::cin >> startLine >> endLine;
-            copyFromFile(fileName, startLine, endLine);
-            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
-            cleanInput(option);
-            break;
+            std::string mode;
+            std::cout << CYAN << "Enter mode (/c = copy, /p = paste): " << RESET;
+            std::cin >> mode;
+
+            if (mode == "/c") {
+                                std::string fileName;
+                                int startLine, endLine;
+                                std::cout << CYAN << "Enter file name to copy from: " << RESET;
+                                std::cin >> fileName;
+
+                                std::ifstream fileCheck(fileName);
+                                 if (!fileCheck.is_open()) {
+                                 std::cout << RED << "❌ Error: File '" << fileName << "' not found or cannot be opened!" << RESET << std::endl;
+                                 } 
+                                 else {
+                                std::cout << CYAN << "Enter start and end line numbers to copy: " << RESET;
+                                std::cin >> startLine >> endLine;
+                                copyFromFile(fileName, startLine, endLine);
+                                }
+
+                                fileCheck.close();
+                              } 
+                else if (mode == "/p") {
+                                std::string fileName;
+                                int lineNumber;
+                                std::cout << CYAN << "Enter file name to paste into: " << RESET;
+                                std::cin >> fileName;
+
+                                std::ifstream fileCheck(fileName);
+                                if (!fileCheck.is_open()) {
+                                 std::cout << RED << "❌ Error: File '" << fileName << "' not found or cannot be opened!" << RESET << std::endl;
+                                } 
+                                else {
+                                std::cout << CYAN << "Enter line number where to paste: " << RESET;
+                                std::cin >> lineNumber;
+                                pasteToFile(fileName, lineNumber);
+                            }
+
+                                 fileCheck.close();
+                                      } 
+                 else {
+                                 std::cout << RED << "Invalid mode. Use /c for copy or /p for paste." << RESET << std::endl;
+                 }
+
+                 std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+                cleanInput(option);
+                break;
         }
+
         case 4:
-        {
-            std::string fileName;
-            int lineNumber;
-            std::cout << CYAN << "Enter file name to paste into: " << RESET;
-            std::cin >> fileName;
-            std::cout << CYAN << "Enter line number where to paste: " << RESET;
-            std::cin >> lineNumber;
-            pasteToFile(fileName, lineNumber);
-            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
-            cleanInput(option);
-            break;
-        }
-        case 5:
         {
             std::string fileName, mode;
             std::cout << CYAN << "Enter file name to search: " << RESET;
