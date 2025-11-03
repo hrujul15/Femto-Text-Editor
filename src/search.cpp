@@ -100,3 +100,52 @@ void findMostFrequentWord(const std::string &filePath)
               << CYAN << " (" << maxCount << " times)" << RESET << "\n";
     return;
 }
+
+//Find and Replace word in the file
+void findAndReplaceInFile(const std::string &filePath, const std::string &target, const std::string &replacement)
+{
+    std::ifstream fin(filePath);
+    if (!fin.is_open())
+    {
+        std::cout << RED << "Error: Could not open file " << filePath << RESET << "\n";
+        return;
+    }
+
+    std::string content;
+    std::string line;
+    int replaceCount = 0;
+
+    // Read the file line by line
+    while (std::getline(fin, line))
+    {
+        size_t pos = 0;
+        
+        // Replace all occurrences of target in this line
+        while ((pos = line.find(target, pos)) != std::string::npos)
+        {
+            line.replace(pos, target.length(), replacement);
+            pos += replacement.length();
+            ++replaceCount;
+        }
+        content += line + "\n";
+    }
+
+    fin.close();
+
+    // Write the updated content back into the file
+    std::ofstream fout(filePath);
+    if (!fout.is_open())
+    {
+        std::cout << RED << "Error: Could not write to file " << filePath << RESET << "\n";
+        return;
+    }
+
+    fout << content;
+    fout.close();
+
+    if (replaceCount > 0)
+        std::cout << GREEN << "Replaced " << replaceCount << " occurrence(s) of '"
+                  << target << "' with '" << replacement << "'." << RESET << "\n";
+    else
+        std::cout << YELLOW << "No occurrences of '" << target << "' found in the file." << RESET << "\n";
+}

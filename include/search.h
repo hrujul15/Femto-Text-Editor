@@ -9,4 +9,8 @@ void findWordInFile(const std::string &filePath, const std::string &word);
 // Find and display the most frequent word in the file (case-insensitive)
 void findMostFrequentWord(const std::string &filePath);
 
+//Find and replace feature(case-sensitive)
+void findAndReplaceInFile(const std::string &filePath, const std::string &target, const std::string &replacement);
+
+
 #endif 
