@@ -1,14 +1,17 @@
-#include "search.h"
+#include "find_and_replace.h"
 #include "util.h"
-#include <fstream>
-#include <string>
+
 #include <algorithm>
 #include <cctype>
-#include <map>
+#include <fstream>
 #include <iostream>
+#include <map>
+#include <string>
+#include <cstddef>
+
 
 //convert string to lowercase for case-insensitive search
-static std::string toLower(const std::string &s)
+std::string toLower(const std::string &s)
 {
     std::string result = s;
     std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
