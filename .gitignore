@@ -45,5 +45,6 @@ Femto-Text-Editor
 
 #Text files
 *.txt
+*.autosave
 # build files
 *.bat
