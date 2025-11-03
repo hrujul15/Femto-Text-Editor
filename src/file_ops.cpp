@@ -1,5 +1,41 @@
 // This will handle file read & write operations
 #include "file_ops.h"
+#include "autosave.h"
+#include <csignal>
+
+// Global variables to track active file for autosave
+std::string g_activeFile = "";
+LineNode* g_activeHead = nullptr;
+
+        // Function to get entire file content from linked list
+std::string getAllFileContent(LineNode *head)
+{
+    std::string content;
+    LineNode *temp = head;
+
+    while (temp)
+    {
+        content += temp->line;
+
+        //  Always add newline **except** when it’s the last line
+        if (temp->nextLine)
+            content += "\n";
+
+        temp = temp->nextLine;
+    }
+
+    return content;
+}
+
+// Signal handler for unexpected termination
+void handleExitSignal(int signal) {
+    if (!g_activeFile.empty() && g_activeHead) {
+        std::cout << "\n\n[AutoSave] Program closed unexpectedly. Creating backup...\n";
+        createAutoSave(g_activeFile, getAllFileContent(g_activeHead));
+    }
+    std::exit(signal);
+}
+
 
 int readFile(std::string fileName)
 {
@@ -12,6 +48,29 @@ int readFile(std::string fileName)
         std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
         return 1;
     }
+ // Check for auto-save backup
+    if (checkAutoSave(fileName)) {
+    std::cout << " Auto-save backup found for this file.\n";
+    std::cout << "Do you want to restore it? (y/n): ";
+    char c; std::cin >> c;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (c == 'y' || c == 'Y') {
+        std::string data = readAutoSave(fileName);
+        std::ofstream restore(fileName);
+        restore << data;
+        restore.close();
+        std::cout << GREEN << "✅ Restored from auto-save.\n" << RESET;
+    } else {
+        deleteAutoSave(fileName);
+        std::cout << "🗑️  Auto-save deleted.\n";
+    }
+}
+
+
+    std::signal(SIGINT, handleExitSignal);
+    std::signal(SIGTERM, handleExitSignal);
+
+    g_activeFile = fileName;
 
     // Storing contents of a line in a string then printing it
     std::string line;
@@ -22,6 +81,8 @@ int readFile(std::string fileName)
     std::cout << RESET;
     return 0;
 }
+
+ 
 int editFile(std::string fileName)
 {
     // If editing reuse writefile function, and instead append at end
@@ -35,6 +96,14 @@ int writeFile(std::string fileName, bool editing)
     std::stack<LineNode *> Undo;
     std::stack<LineNode *> Redo;
 
+    // Setup signal handlers for autosave on unexpected exit
+  std::signal(SIGINT, handleExitSignal);
+    std::signal(SIGTERM, handleExitSignal);
+
+    g_activeFile = fileName;
+    g_activeHead = nullptr; // will point to linesHead once loaded
+
+
     // Storing input text to linked lists for editing previous lines
     LineNode *linesHead = nullptr;
     LineNode *current = linesHead;
@@ -43,6 +112,24 @@ int writeFile(std::string fileName, bool editing)
     int currentLine = 0;
     if (editing)
     {
+        // Check for auto-save backup
+ if (checkAutoSave(fileName)) {
+        std::cout << YELLOW << "\nAuto-save backup found for this file.\n";
+        std::cout << "Do you want to restore it? (y/n): " << RESET;
+        char c; std::cin >> c;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (c == 'y' || c == 'Y') {
+            std::string data = readAutoSave(fileName);
+            std::ofstream restore(fileName);
+            restore << data;
+            restore.close();
+            std::cout << GREEN << "✅ Restored from auto-save.\n" << RESET;
+        } else {
+            deleteAutoSave(fileName);
+            std::cout << "🗑️  Auto-save deleted.\n";
+        }
+    }
+
         // store the pre-existing lines in linked list
         //  Open the text file
         std::ifstream file(fileName);
@@ -72,6 +159,8 @@ int writeFile(std::string fileName, bool editing)
             }
         }
         file.close();
+        // Set global head for autosave
+        g_activeHead = linesHead; // set global head for autosave
         mode = std::ios::app;
     }
     else
@@ -93,7 +182,7 @@ int writeFile(std::string fileName, bool editing)
         std::getline(std::cin, line);
         if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d" and line != "/D")
         {
-
+           
             if (!linesHead)
             {
                 linesHead = new LineNode(line);
@@ -114,6 +203,9 @@ int writeFile(std::string fileName, bool editing)
                 current->nextLine = new LineNode(line);
                 current = current->nextLine;
             }
+                // Update global head for autosave
+             createAutoSave(fileName, getAllFileContent(linesHead));
+
         }
         else if (line == "/u")
         {
@@ -189,6 +281,9 @@ int writeFile(std::string fileName, bool editing)
                 // Reprint contents of file
                 --currentLine;
                 currentLine = traverseAndPrint(linesHead);
+                // Update global head for autosave
+                createAutoSave(fileName, getAllFileContent(linesHead));
+                 
                 current = nullptr;
             }
         }
@@ -230,6 +325,8 @@ int writeFile(std::string fileName, bool editing)
         {
             std::cout << RED << "Invalid range " << RESET << std::endl;
             currentLine = traverseAndPrint(linesHead);
+            // Update global head for autosave
+            createAutoSave(fileName, getAllFileContent(linesHead));
             current = nullptr;
             continue;
         }
@@ -309,6 +406,8 @@ int writeFile(std::string fileName, bool editing)
                 }
                 // Reprint contents
                 currentLine = traverseAndPrint(linesHead);
+                // Update global head for autosave
+                createAutoSave(fileName, getAllFileContent(linesHead));
                 // current = nullptr;
             }
         }
@@ -333,6 +432,11 @@ int writeFile(std::string fileName, bool editing)
             current = nullptr;
 
             file.close();
+            // Delete autosave on normal exit
+            deleteAutoSave(fileName);
+            // Reset global autosave trackers
+             g_activeFile = "";
+    g_activeHead = nullptr;
         }
         else if (line == "/e")
         {
@@ -379,6 +483,8 @@ int writeFile(std::string fileName, bool editing)
                     lineFinder->line = line;
                 }
                 currentLine = traverseAndPrint(linesHead);
+                // Update global head for autosave
+                createAutoSave(fileName, getAllFileContent(linesHead));
                 // current = nullptr;
             }
         }
