@@ -28,11 +28,14 @@ std::string getAllFileContent(LineNode *head)
 }
 
 // Signal handler for unexpected termination
-void handleExitSignal(int signal) {
-    if (!g_activeFile.empty() && g_activeHead) {
-        std::cout << "\n\n[AutoSave] Program closed unexpectedly. Creating backup...\n";
+void handleExitSignal(int signal)
+{
+    if (!g_activeFile.empty() && g_activeHead)
+     {
+        // if program is terminated unexpectedly, create autosave
         createAutoSave(g_activeFile, getAllFileContent(g_activeHead));
-    }
+     }
+
     std::exit(signal);
 }
 
@@ -49,22 +52,42 @@ int readFile(std::string fileName)
         return 1;
     }
  // Check for auto-save backup
-    if (checkAutoSave(fileName)) {
-    std::cout << " Auto-save backup found for this file.\n";
-    std::cout << "Do you want to restore it? (y/n): ";
-    char c; std::cin >> c;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (c == 'y' || c == 'Y') {
-        std::string data = readAutoSave(fileName);
-        std::ofstream restore(fileName);
-        restore << data;
-        restore.close();
-        std::cout << GREEN << "✅ Restored from auto-save.\n" << RESET;
-    } else {
-        deleteAutoSave(fileName);
-        std::cout << "🗑️  Auto-save deleted.\n";
+    if (checkAutoSave(fileName))
+    {
+
+     while (true)
+     {
+        std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
+        std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
+
+        char c;
+        std::cin >> c;
+
+        // Clear input buffer
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        if (c == 'y' || c == 'Y') 
+        {
+            std::string data = readAutoSave(fileName);
+            std::ofstream restore(fileName);
+            restore << data;
+            restore.close();
+            std::cout << GREEN << " Restored from auto-save.\n" << RESET;
+            break;
+        } 
+        else if (c == 'n' || c == 'N') 
+        {
+            deleteAutoSave(fileName);
+            std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
+        }
+     }
+
     }
-}
 
 
     std::signal(SIGINT, handleExitSignal);
@@ -97,7 +120,7 @@ int writeFile(std::string fileName, bool editing)
     std::stack<LineNode *> Redo;
 
     // Setup signal handlers for autosave on unexpected exit
-  std::signal(SIGINT, handleExitSignal);
+    std::signal(SIGINT, handleExitSignal);
     std::signal(SIGTERM, handleExitSignal);
 
     g_activeFile = fileName;
@@ -113,22 +136,42 @@ int writeFile(std::string fileName, bool editing)
     if (editing)
     {
         // Check for auto-save backup
- if (checkAutoSave(fileName)) {
-        std::cout << YELLOW << "\nAuto-save backup found for this file.\n";
-        std::cout << "Do you want to restore it? (y/n): " << RESET;
-        char c; std::cin >> c;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (c == 'y' || c == 'Y') {
+     if (checkAutoSave(fileName)) 
+     {
+
+        while (true)
+         {
+            std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
+            std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
+
+            char c;
+            std::cin >> c;
+
+         // Clear input buffer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        if (c == 'y' || c == 'Y') 
+        {
             std::string data = readAutoSave(fileName);
             std::ofstream restore(fileName);
             restore << data;
             restore.close();
-            std::cout << GREEN << "✅ Restored from auto-save.\n" << RESET;
-        } else {
+            std::cout << GREEN << " Restored from auto-save.\n" << RESET;
+            break;
+        } 
+        else if (c == 'n' || c == 'N')
+        {  
             deleteAutoSave(fileName);
-            std::cout << "🗑️  Auto-save deleted.\n";
+            std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
+            break;
         }
-    }
+        else 
+        {
+            std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
+        }
+
+        }
+     }
 
         // store the pre-existing lines in linked list
         //  Open the text file
@@ -136,7 +179,7 @@ int writeFile(std::string fileName, bool editing)
         // Error opening the file
         if (!file.is_open())
         {
-            std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
+            std::cerr << RED << " Error Opening the File!!!" << RESET << std::endl;
             return 1;
         }
         // Storing contents of a line in a string then printing it

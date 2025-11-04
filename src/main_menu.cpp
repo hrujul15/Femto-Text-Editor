@@ -195,6 +195,7 @@ void chooseOperation(int option)
         case 8:
         {
             std::cout << MAGENTA << "Welcome to Femto-Text-Editor!" << RESET << std::endl;
+            std::cout << YELLOW << "[Tip] Your last line is only saved after pressing Enter!" << RESET << std::endl;
             std::cout << BLUE << "Please choose an operation to perform:" << std::endl;
             std::cout << "-1: Exit" << std::endl;
             std::cout << "0: Read a file" << std::endl;
