@@ -4,7 +4,7 @@
 #include "main_menu.h"
 #include "file_ops.h"
 #include "clipboard.h"
-
+#include "similarity.h"
 #include "stats.h"
 
 void welcome()
@@ -20,10 +20,11 @@ void welcome()
     std::cout << "3: Copy text from file" << std::endl;
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
-    std::cout << "6: Display File Statistics" << std::endl; ////////
+    std::cout << "6: Display File Statistics" << std::endl; 
 
     std::cout << "7: Find and Replace in File" << std::endl;
-    std::cout << "8: Print this Command Pallete" << RESET << std::endl; ////////
+    std::cout << "8: Print this Command Pallete" << std::endl; 
+    std::cout << "9: Check File Similarity" << RESET << std::endl; 
 
     cleanInput(option);
     chooseOperation(option);
@@ -206,7 +207,15 @@ void chooseOperation(int option)
             std::cout << "5: Search in file" << std::endl;
             std::cout << "6: Display File Statistics" << std::endl;
             std::cout << "7: Find and Replace in File" << std::endl;
-            std::cout << "8: Print this Command Pallete" << RESET << std::endl;
+            std::cout << "8: Print this Command Pallete" << std::endl;
+            std::cout << "9: Check File Similarity" << RESET << std::endl; 
+            cleanInput(option);
+            break;
+        }
+        case 9:
+        {
+            checkFileSimilarity();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
         }
