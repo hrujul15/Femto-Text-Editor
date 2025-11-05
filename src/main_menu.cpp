@@ -6,6 +6,7 @@
 #include "clipboard.h"
 #include "similarity.h"
 #include "stats.h"
+#include "recent_files.h"
 
 void welcome()
 {
@@ -21,10 +22,11 @@ void welcome()
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
     std::cout << "6: Display File Statistics" << std::endl; 
-
     std::cout << "7: Find and Replace in File" << std::endl;
     std::cout << "8: Print this Command Pallete" << std::endl; 
-    std::cout << "9: Check File Similarity" << RESET << std::endl; 
+    std::cout << "9: Check File Similarity" << std::endl;
+    std::cout << "10: Show Recent Files" << RESET << std::endl;
+ 
 
     cleanInput(option);
     chooseOperation(option);
@@ -47,6 +49,7 @@ void chooseOperation(int option)
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
             readFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -60,6 +63,7 @@ void chooseOperation(int option)
             std::cin.ignore(); // To clear input buffer
             std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             writeFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -73,6 +77,7 @@ void chooseOperation(int option)
             std::cin.ignore(); // To clear input buffer
             std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             editFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -159,11 +164,12 @@ void chooseOperation(int option)
             {
                 std::cout << RED << "Invalid mode. Use /f or /m." << RESET << std::endl;
             }
-
+            addRecentFile(fileName);
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
         }
+        
         case 6:
         {
             std::string fileName;
@@ -208,13 +214,22 @@ void chooseOperation(int option)
             std::cout << "6: Display File Statistics" << std::endl;
             std::cout << "7: Find and Replace in File" << std::endl;
             std::cout << "8: Print this Command Pallete" << std::endl;
-            std::cout << "9: Check File Similarity" << RESET << std::endl; 
+            std::cout << "9: Check File Similarity" << std::endl; 
+            std::cout << "10: Show Recent Files" << RESET << std::endl;
+
             cleanInput(option);
             break;
         }
         case 9:
         {
             checkFileSimilarity();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 10:
+        {
+            showRecentFiles();
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
