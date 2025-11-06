@@ -22,7 +22,7 @@ void welcome()
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
     std::cout << "6: Display File Statistics" << std::endl; 
-    std::cout << "7: Find and Replace in File" << std::endl;
+    std::cout << "7: Search and Modify" << std::endl;
     std::cout << "8: Print this Command Pallete" << std::endl; 
     std::cout << "9: Check File Similarity" << std::endl;
     std::cout << "10: Show Recent Files" << RESET << std::endl;
@@ -185,20 +185,38 @@ void chooseOperation(int option)
         }
         case 7:
         {
-            std::string fileName, target, replacement;
-            std::cout << CYAN << "Enter file name to search: " << RESET;
-            std::cin >> fileName;
-            std::cout << CYAN << "Enter word to find (case-sensitive): " << RESET;
-            std::cin >> target;
-            std::cout << CYAN << "Enter replacement word: " << RESET;
-            std::cin >> replacement;
+        std::string fileName, findWord, replaceWord, mode;
+        std::cout << CYAN << "Enter file name: " << RESET;
+        std::cin >> fileName;
 
-            findAndReplaceInFile(fileName, target, replacement);
+        std::cout << YELLOW << "Choose mode (/r = find & replace, /! = find & delete): " << RESET;
+        std::cin >> mode;
 
-            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
-            cleanInput(option);
-            break;
+        if (mode == "/r")
+        {
+        std::cout << CYAN << "Enter word to find: " << RESET;
+        std::cin >> findWord;
+        std::cout << CYAN << "Enter word to replace it with: " << RESET;
+        std::cin >> replaceWord;
+        findAndReplaceInFile(fileName, findWord, replaceWord); 
         }
+        else if (mode == "/!")
+        {
+        std::cout << CYAN << "Enter word to delete (case-sensitive): " << RESET;
+        std::cin >> findWord;
+        deleteWordFromFile(fileName, findWord); 
+        }
+        
+        else
+        {
+        std::cout << RED << "Invalid mode! Use /r or /!." << RESET << std::endl;
+        }
+        addRecentFile(fileName);
+        std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+        cleanInput(option);
+        break;
+        }
+
         case 8:
         {
             std::cout << MAGENTA << "Welcome to Femto-Text-Editor!" << RESET << std::endl;
@@ -212,7 +230,7 @@ void chooseOperation(int option)
             std::cout << "4: Paste text into file" << std::endl;
             std::cout << "5: Search in file" << std::endl;
             std::cout << "6: Display File Statistics" << std::endl;
-            std::cout << "7: Find and Replace in File" << std::endl;
+            std::cout << "7: Search and Modify" << std::endl;
             std::cout << "8: Print this Command Pallete" << std::endl;
             std::cout << "9: Check File Similarity" << std::endl; 
             std::cout << "10: Show Recent Files" << RESET << std::endl;
