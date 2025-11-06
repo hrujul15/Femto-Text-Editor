@@ -222,7 +222,7 @@ int writeFile(std::string fileName, bool editing)
         std::getline(std::cin, line);
         if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d" and line != "/D")
         {
-
+           
             if (!linesHead)
             {
                 linesHead = new LineNode(line);
@@ -352,12 +352,15 @@ int writeFile(std::string fileName, bool editing)
                 LineNode *prev = nullptr;
                 int lineNum = 1;
 
-                while (temp && lineNum < startLine)
-                {
-                    prev = temp;
-                    temp = temp->nextLine;
-                    ++lineNum;
-                }
+        if (!temp)
+        {
+            std::cout << RED << "Invalid range " << RESET << std::endl;
+            currentLine = traverseAndPrint(linesHead);
+            // Update global head for autosave
+            createAutoSave(fileName, getAllFileContent(linesHead));
+            current = nullptr;
+            continue;
+        }
 
                 if (!temp)
                 {
@@ -471,8 +474,8 @@ int writeFile(std::string fileName, bool editing)
             // Delete autosave on normal exit
             deleteAutoSave(fileName);
             // Reset global autosave trackers
-            g_activeFile = "";
-            g_activeHead = nullptr;
+             g_activeFile = "";
+    g_activeHead = nullptr;
         }
         else if (line == "/e")
         {
