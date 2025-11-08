@@ -171,7 +171,9 @@ void deleteWordFromFile(const std::string &filePath, const std::string &targetWo
 
 }
 
-//Find and Replace word in the file
+
+
+// Rolling Hash based Find & Replace
 void findAndReplaceInFile(const std::string &filePath, const std::string &findWord, const std::string &replaceWord)
 {
     std::ifstream fin(filePath);
@@ -181,10 +183,29 @@ void findAndReplaceInFile(const std::string &filePath, const std::string &findWo
         return;
     }
 
+    const int base = 256;
+    const int prime = 101;
+    const int M = findWord.length();
+
+    if (M == 0)
+    {
+        std::cout << YELLOW << "Empty search word. Nothing to replace." << RESET << "\n";
+        return;
+    }
+
+    // Precompute hash for pattern
+    int patternHash = 0;
+    int h = 1; // base^(M-1) % prime
+    for (int i = 0; i < M - 1; ++i)
+        h = (h * base) % prime;
+
+    for (int i = 0; i < M; ++i)
+        patternHash = (base * patternHash + findWord[i]) % prime;
+
     std::string line;
     std::vector<std::string> updatedLines;
-    bool replaced = false;
     int replaceCount = 0;
+    bool replaced = false;
 
     while (std::getline(fin, line))
     {
@@ -193,13 +214,19 @@ void findAndReplaceInFile(const std::string &filePath, const std::string &findWo
         std::string newLine;
         bool firstWord = true;
 
-        // Go word by word to ensure whole-word match
+        // Process line word by word
         while (ss >> word)
         {
-            if (word == findWord)
+            // Rolling hash for this word
+            int textHash = 0;
+            for (char c : word)
+                textHash = (base * textHash + c) % prime;
+
+            // Only replace exact whole word match
+            if (textHash == patternHash and word == findWord)
             {
-                replaced = true;
                 word = replaceWord;
+                replaced = true;
                 replaceCount++;
             }
 
@@ -226,7 +253,8 @@ void findAndReplaceInFile(const std::string &filePath, const std::string &findWo
         fout << ln << "\n";
     fout.close();
 
-    std::cout << GREEN << "Replaced " << replaceCount 
-              << " occurrence(s) of '" << findWord 
-              << "' with '" << replaceWord << "' successfully!" << RESET << "\n";
+    std::cout << GREEN << "Replaced " << replaceCount
+              << " occurrence(s) of '" << findWord
+              << "' with '" << replaceWord
+              << "' successfully." << RESET << "\n";
 }
