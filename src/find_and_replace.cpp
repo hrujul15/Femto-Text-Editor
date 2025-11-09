@@ -1,6 +1,7 @@
 #include "find_and_replace.h"
 #include "util.h"
-
+#include <sstream>
+#include <vector>
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -104,8 +105,8 @@ void findMostFrequentWord(const std::string &filePath)
     return;
 }
 
-//Find and Replace word in the file
-void findAndReplaceInFile(const std::string &filePath, const std::string &target, const std::string &replacement)
+// Delete all occurrences of a specific word from the file (case-sensitive)
+void deleteWordFromFile(const std::string &filePath, const std::string &targetWord)
 {
     std::ifstream fin(filePath);
     if (!fin.is_open())
@@ -114,41 +115,146 @@ void findAndReplaceInFile(const std::string &filePath, const std::string &target
         return;
     }
 
-    std::string content;
     std::string line;
-    int replaceCount = 0;
+    std::vector<std::string> updatedLines;
+    bool found = false;
+    int deletedCount = 0;
 
-    // Read the file line by line
+    // Go through every line in the file
     while (std::getline(fin, line))
     {
-        size_t pos = 0;
+        std::stringstream ss(line);
+        std::string word;
+        std::string newLine;
+        bool firstWord = true;
+
         
-        // Replace all occurrences of target in this line
-        while ((pos = line.find(target, pos)) != std::string::npos)
+        while (ss >> word)
         {
-            line.replace(pos, target.length(), replacement);
-            pos += replacement.length();
-            ++replaceCount;
+            if (word == targetWord)
+            {
+                found = true;
+                deletedCount++;
+                continue;
+            }
+
+            if (!firstWord)
+                newLine += " ";
+            newLine += word;
+            firstWord = false;
         }
-        content += line + "\n";
+
+        updatedLines.push_back(newLine);
     }
 
     fin.close();
 
-    // Write the updated content back into the file
-    std::ofstream fout(filePath);
-    if (!fout.is_open())
+    if (!found)
     {
-        std::cout << RED << "Error: Could not write to file " << filePath << RESET << "\n";
+        std::cout << YELLOW << "Word '" << targetWord << "' not found in file." << RESET << "\n";
         return;
     }
 
-    fout << content;
+    // Rewrite file with updated content
+    std::ofstream fout(filePath, std::ios::trunc);
+    for (const auto &ln : updatedLines)
+    {
+    
+    if (!ln.empty())
+        fout << ln << "\n";
+    }
     fout.close();
 
-    if (replaceCount > 0)
-        std::cout << GREEN << "Replaced " << replaceCount << " occurrence(s) of '"
-                  << target << "' with '" << replacement << "'." << RESET << "\n";
-    else
-        std::cout << YELLOW << "No occurrences of '" << target << "' found in the file." << RESET << "\n";
+    std::cout << GREEN << "Deleted all " << deletedCount 
+          << " occurrences of '" << targetWord 
+          << "' successfully!" << RESET << "\n";
+
+}
+
+
+
+// Rolling Hash based Find & Replace
+void findAndReplaceInFile(const std::string &filePath, const std::string &findWord, const std::string &replaceWord)
+{
+    std::ifstream fin(filePath);
+    if (!fin.is_open())
+    {
+        std::cout << RED << "Error: Could not open file " << filePath << RESET << "\n";
+        return;
+    }
+
+    const int base = 256;
+    const int prime = 101;
+    const int M = findWord.length();
+
+    if (M == 0)
+    {
+        std::cout << YELLOW << "Empty search word. Nothing to replace." << RESET << "\n";
+        return;
+    }
+
+    // Precompute hash for pattern
+    int patternHash = 0;
+    int h = 1; // base^(M-1) % prime
+    for (int i = 0; i < M - 1; ++i)
+        h = (h * base) % prime;
+
+    for (int i = 0; i < M; ++i)
+        patternHash = (base * patternHash + findWord[i]) % prime;
+
+    std::string line;
+    std::vector<std::string> updatedLines;
+    int replaceCount = 0;
+    bool replaced = false;
+
+    while (std::getline(fin, line))
+    {
+        std::stringstream ss(line);
+        std::string word;
+        std::string newLine;
+        bool firstWord = true;
+
+        // Process line word by word
+        while (ss >> word)
+        {
+            // Rolling hash for this word
+            int textHash = 0;
+            for (char c : word)
+                textHash = (base * textHash + c) % prime;
+
+            // Only replace exact whole word match
+            if (textHash == patternHash and word == findWord)
+            {
+                word = replaceWord;
+                replaced = true;
+                replaceCount++;
+            }
+
+            if (!firstWord)
+                newLine += " ";
+            newLine += word;
+            firstWord = false;
+        }
+
+        updatedLines.push_back(newLine);
+    }
+
+    fin.close();
+
+    if (!replaced)
+    {
+        std::cout << YELLOW << "Word '" << findWord << "' not found in file." << RESET << "\n";
+        return;
+    }
+
+    // Rewrite file
+    std::ofstream fout(filePath, std::ios::trunc);
+    for (const auto &ln : updatedLines)
+        fout << ln << "\n";
+    fout.close();
+
+    std::cout << GREEN << "Replaced " << replaceCount
+              << " occurrence(s) of '" << findWord
+              << "' with '" << replaceWord
+              << "' successfully." << RESET << "\n";
 }

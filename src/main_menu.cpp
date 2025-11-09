@@ -4,8 +4,9 @@
 #include "main_menu.h"
 #include "file_ops.h"
 #include "clipboard.h"
-
+#include "similarity.h"
 #include "stats.h"
+#include "recent_files.h"
 
 void welcome()
 {
@@ -20,10 +21,12 @@ void welcome()
     std::cout << "3: Copy text from file" << std::endl;
     std::cout << "4: Paste text into file" << std::endl;
     std::cout << "5: Search in file" << std::endl;
-    std::cout << "6: Display File Statistics" << std::endl; ////////
-
-    std::cout << "7: Find and Replace in File" << std::endl;
-    std::cout << "8: Print this Command Pallete" << RESET << std::endl; ////////
+    std::cout << "6: Display File Statistics" << std::endl; 
+    std::cout << "7: Search and Modify" << std::endl;
+    std::cout << "8: Print this Command Pallete" << std::endl; 
+    std::cout << "9: Check File Similarity" << std::endl;
+    std::cout << "10: Show Recent Files" << RESET << std::endl;
+ 
 
     cleanInput(option);
     chooseOperation(option);
@@ -46,6 +49,7 @@ void chooseOperation(int option)
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
             readFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -59,6 +63,7 @@ void chooseOperation(int option)
             std::cin.ignore(); // To clear input buffer
             std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             writeFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -72,6 +77,7 @@ void chooseOperation(int option)
             std::cin.ignore(); // To clear input buffer
             std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
             editFile(fileName);
+            addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
@@ -158,11 +164,12 @@ void chooseOperation(int option)
             {
                 std::cout << RED << "Invalid mode. Use /f or /m." << RESET << std::endl;
             }
-
+            addRecentFile(fileName);
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
         }
+        
         case 6:
         {
             std::string fileName;
@@ -178,20 +185,38 @@ void chooseOperation(int option)
         }
         case 7:
         {
-            std::string fileName, target, replacement;
-            std::cout << CYAN << "Enter file name to search: " << RESET;
-            std::cin >> fileName;
-            std::cout << CYAN << "Enter word to find (case-sensitive): " << RESET;
-            std::cin >> target;
-            std::cout << CYAN << "Enter replacement word: " << RESET;
-            std::cin >> replacement;
+        std::string fileName, findWord, replaceWord, mode;
+        std::cout << CYAN << "Enter file name: " << RESET;
+        std::cin >> fileName;
 
-            findAndReplaceInFile(fileName, target, replacement);
+        std::cout << YELLOW << "Choose mode (/r = find & replace, /! = find & delete): " << RESET;
+        std::cin >> mode;
 
-            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
-            cleanInput(option);
-            break;
+        if (mode == "/r")
+        {
+        std::cout << CYAN << "Enter word to find: " << RESET;
+        std::cin >> findWord;
+        std::cout << CYAN << "Enter word to replace it with: " << RESET;
+        std::cin >> replaceWord;
+        findAndReplaceInFile(fileName, findWord, replaceWord); 
         }
+        else if (mode == "/!")
+        {
+        std::cout << CYAN << "Enter word to delete (case-sensitive): " << RESET;
+        std::cin >> findWord;
+        deleteWordFromFile(fileName, findWord); 
+        }
+        
+        else
+        {
+        std::cout << RED << "Invalid mode! Use /r or /!." << RESET << std::endl;
+        }
+        addRecentFile(fileName);
+        std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+        cleanInput(option);
+        break;
+        }
+
         case 8:
         {
             std::cout << MAGENTA << "Welcome to Femto-Text-Editor!" << RESET << std::endl;
@@ -205,8 +230,25 @@ void chooseOperation(int option)
             std::cout << "4: Paste text into file" << std::endl;
             std::cout << "5: Search in file" << std::endl;
             std::cout << "6: Display File Statistics" << std::endl;
-            std::cout << "7: Find and Replace in File" << std::endl;
-            std::cout << "8: Print this Command Pallete" << RESET << std::endl;
+            std::cout << "7: Search and Modify" << std::endl;
+            std::cout << "8: Print this Command Pallete" << std::endl;
+            std::cout << "9: Check File Similarity" << std::endl; 
+            std::cout << "10: Show Recent Files" << RESET << std::endl;
+
+            cleanInput(option);
+            break;
+        }
+        case 9:
+        {
+            checkFileSimilarity();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 10:
+        {
+            showRecentFiles();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
         }

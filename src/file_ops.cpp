@@ -5,9 +5,9 @@
 
 // Global variables to track active file for autosave
 std::string g_activeFile = "";
-LineNode* g_activeHead = nullptr;
+LineNode *g_activeHead = nullptr;
 
-        // Function to get entire file content from linked list
+// Function to get entire file content from linked list
 std::string getAllFileContent(LineNode *head)
 {
     std::string content;
@@ -38,7 +38,6 @@ void handleExitSignal(int signal)
 
     std::exit(signal);
 }
-
 
 int readFile(std::string fileName)
 {
@@ -105,7 +104,6 @@ int readFile(std::string fileName)
     return 0;
 }
 
- 
 int editFile(std::string fileName)
 {
     // If editing reuse writefile function, and instead append at end
@@ -125,7 +123,6 @@ int writeFile(std::string fileName, bool editing)
 
     g_activeFile = fileName;
     g_activeHead = nullptr; // will point to linesHead once loaded
-
 
     // Storing input text to linked lists for editing previous lines
     LineNode *linesHead = nullptr;
@@ -246,9 +243,8 @@ int writeFile(std::string fileName, bool editing)
                 current->nextLine = new LineNode(line);
                 current = current->nextLine;
             }
-                // Update global head for autosave
-             createAutoSave(fileName, getAllFileContent(linesHead));
-
+            // Update global head for autosave
+            createAutoSave(fileName, getAllFileContent(linesHead));
         }
         else if (line == "/u")
         {
@@ -326,7 +322,7 @@ int writeFile(std::string fileName, bool editing)
                 currentLine = traverseAndPrint(linesHead);
                 // Update global head for autosave
                 createAutoSave(fileName, getAllFileContent(linesHead));
-                 
+
                 current = nullptr;
             }
         }

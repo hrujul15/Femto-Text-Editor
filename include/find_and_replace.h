@@ -13,4 +13,7 @@ void findMostFrequentWord(const std::string &filePath);
 // Find and replace feature(case-sensitive)
 void findAndReplaceInFile(const std::string &filePath, const std::string &target, const std::string &replacement);
 
+// Delete all occurrences of a specific word from a file (case-sensitive)
+void deleteWordFromFile(const std::string &filePath, const std::string &targetWord);
+
 #endif
