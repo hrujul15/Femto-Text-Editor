@@ -328,72 +328,82 @@ int writeFile(std::string fileName, bool editing)
         }
         // delete a range of lines
         else if (line == "/d")
+{
+    if (!linesHead)
+    {
+        std::cout << RED << "Nothing to delete!" << RESET << std::endl;
+        --currentLine;
+    }
+    else
+    {
+        int startLine, endLine;
+        std::cout << GREEN << "Enter starting and ending line numbers to delete (e.g., 3 8): " << RESET;
+        
+        // Check if input extraction was successful
+        if (!(std::cin >> startLine >> endLine))
         {
-            if (!linesHead)
-            {
-                std::cout << RED << "Nothing to delete!" << RESET << std::endl;
-                --currentLine;
-            }
-            else
-            {
-                int startLine, endLine;
-                std::cout << GREEN << "Enter starting and ending line numbers to delete (e.g., 3 8): " << RESET;
+            std::cout << RED << "Invalid input! Please enter numbers only." << RESET << std::endl;
+            std::cin.clear(); // Clear the error flags
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
+            currentLine = traverseAndPrint(linesHead);
+            current = nullptr;
+            continue;
+        }
+        
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
 
-                // Read both numbers on the same line
-                std::cin >> startLine >> endLine;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
+        if (startLine > endLine)
+            std::swap(startLine, endLine);
+        if (startLine < 1)
+            startLine = 1;
 
-                if (startLine > endLine)
-                    std::swap(startLine, endLine);
-                if (startLine < 1)
-                    startLine = 1;
+        LineNode* temp = linesHead;
+        LineNode* prev = nullptr;
+        int lineNum = 1;
 
-                LineNode *temp = linesHead;
-                LineNode *prev = nullptr;
-                int lineNum = 1;
+        // Move to the start line
+        while (temp && lineNum < startLine)
+        {
+            prev = temp;
+            temp = temp->nextLine;
+            ++lineNum;
+        }
 
+        // Nothing to delete
         if (!temp)
         {
-            std::cout << RED << "Invalid range " << RESET << std::endl;
+            std::cout << RED << "Invalid range!" << RESET << std::endl;
             currentLine = traverseAndPrint(linesHead);
-            // Update global head for autosave
             createAutoSave(fileName, getAllFileContent(linesHead));
             current = nullptr;
             continue;
         }
 
-                if (!temp)
-                {
-                    std::cout << RED << "Invalid range " << RESET << std::endl;
-                    currentLine = traverseAndPrint(linesHead);
-                    // Update global head for autosave
-                    createAutoSave(fileName, getAllFileContent(linesHead));
-                    current = nullptr;
-                    continue;
-                }
-
-                // Delete between startLine and endLine
-                LineNode *afterEnd = temp;
-                while (afterEnd and lineNum <= endLine)
-                {
-                    LineNode *toDelete = afterEnd;
-                    afterEnd = afterEnd->nextLine;
-                    delete toDelete;
-                    ++lineNum;
-                }
-
-                if (prev)
-                    prev->nextLine = afterEnd;
-                else
-                    linesHead = afterEnd;
-
-                std::cout << GREEN << "Deleted lines from " << startLine << " to " << endLine << "." << RESET << std::endl;
-
-                // Reprint updated file
-                currentLine = traverseAndPrint(linesHead);
-                current = nullptr;
-            }
+        // Delete from startLine to endLine
+        LineNode* afterEnd = temp;
+        while (afterEnd && lineNum <= endLine)
+        {
+            LineNode* toDelete = afterEnd;
+            afterEnd = afterEnd->nextLine;
+            delete toDelete;
+            ++lineNum;
         }
+
+        // Reconnect linked list
+        if (prev)
+            prev->nextLine = afterEnd;
+        else
+            linesHead = afterEnd;
+
+        std::cout << GREEN << "Deleted lines from " << startLine << " to " << endLine << "." << RESET << std::endl;
+
+        // Reprint updated file
+        currentLine = traverseAndPrint(linesHead);
+        createAutoSave(fileName, getAllFileContent(linesHead));
+        current = nullptr;
+    }
+}
+
 
         else if (line == "/i")
         {
