@@ -2,13 +2,7 @@
 
 #include "similarity.h"
 #include "util.h"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <unordered_set>
-#include <algorithm>
-#include <cstdio> // for remove()
+// for remove()
 
 // Split text into lowercase words
 static std::unordered_set<std::string> extractWords(const std::string &text)
@@ -68,7 +62,6 @@ double compareFiles(const std::string &file1, const std::string &file2)
     return similarity;
 }
 
-
 void checkFileSimilarity()
 {
     std::string file1, file2;
@@ -87,7 +80,7 @@ void checkFileSimilarity()
     std::cout << YELLOW << "Similarity between files: " << RESET << similarity << "%" << std::endl;
     std::cout.unsetf(std::ios::fixed);
 
-    if (similarity >= 100.0 - 1e-9) 
+    if (similarity >= 100.0 - 1e-9)
     {
         char choice;
         std::cout << RED << "Files are identical! Do you want to delete one? (y/n): " << RESET;

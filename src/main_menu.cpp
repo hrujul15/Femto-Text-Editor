@@ -7,6 +7,7 @@
 #include "similarity.h"
 #include "stats.h"
 #include "recent_files.h"
+#include "compression.h"
 
 void welcome()
 {
@@ -225,14 +226,15 @@ void chooseOperation(int option)
             std::cout << "0: Read a file" << std::endl;
             std::cout << "1: Create a file and edit it" << std::endl;
             std::cout << "2: Open a file and edit it" << std::endl;
-            std::cout << "3: Copy text from file" << std::endl;
-            std::cout << "4: Paste text into file" << std::endl;
-            std::cout << "5: Search in file" << std::endl;
-            std::cout << "6: Display File Statistics" << std::endl;
-            std::cout << "7: Search and Modify" << std::endl;
-            std::cout << "8: Print this Command Pallete" << std::endl;
-            std::cout << "9: Check File Similarity" << std::endl; 
-            std::cout << "10: Show Recent Files" << RESET << std::endl;
+            std::cout << "3: Copy/Paste text from file" << std::endl;
+            std::cout << "4: Search in file" << std::endl;
+            std::cout << "5: Display File Statistics" << std::endl;
+            std::cout << "6: Search and Modify" << std::endl;
+            std::cout << "7: Print this Command Pallete" << std::endl;
+            std::cout << "8: Check File Similarity" << std::endl;
+            std::cout << "9: Show Recent Files" << std::endl;
+            std::cout << "10: Compress a Large File" << std::endl;
+            std::cout << "11: De-Compress a Large File" << RESET << std::endl;
 
             cleanInput(option);
             break;
@@ -247,6 +249,20 @@ void chooseOperation(int option)
         case 9:
         {
             showRecentFiles();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 10:
+        {
+            readFileforCompression();
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
+        }
+        case 11:
+        {
+            readFromBinary();
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
