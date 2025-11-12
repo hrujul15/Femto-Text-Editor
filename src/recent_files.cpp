@@ -44,7 +44,7 @@ void showRecentFiles()
         return;
     }
 
-    std::cout << CYAN << "Recent Files (oldest first, most recent last):" << RESET << std::endl;
+    std::cout << CYAN << "Recent Files for this Session(oldest first, most recent last):" << RESET << std::endl;
     std::cout << "-----------------------------------" << std::endl;
 
     int index = 1;

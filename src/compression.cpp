@@ -220,7 +220,8 @@ int readFileforCompression()
         std::cout << CYAN << "File Compression Successful!" << std::endl;
         std::cout << "Original File Size: " << ogSize << " KB" << std::endl;
         std::cout << "New File Size: " << newSize << " KB" << std::endl;
-        std::cout << "Compression: " << (compressionRatio) << "% smaller" << RESET << std::endl;
+        std::cout << "Compression: " << (compressionRatio) << "% smaller" << std::endl;
+        std::cout << "(Note: Reported sizes are logical file sizes\nActual disk usage may be higher due to filesystem block allocation)" << RESET << std::endl;
     }
     file.close();
     binFile.close();

@@ -47,6 +47,7 @@ Femto-Text-Editor
 *.txt
 *.autosave
 *.json
+*.bin
 # build files
 *.bat
 .vscode
