@@ -29,22 +29,71 @@ void findWordInFile(const std::string &filePath, const std::string &word)
         return;
     }
 
+    const int base = 256;   // base for rolling hash
+    const int prime = 101;  // a prime number for modulo
+    int M = word.length();
+
+ 
+    if (M == 0)
+    {
+       std::cout << YELLOW << "Empty search word. Nothing to search." << RESET << "\n";
+        return;
+    }
+
+    std::string pattern = toLower(word);
+
+    // Compute hash of the pattern
+    int patternHash = 0;
+    int h = 1; // base^(M-1) % prime
+
+    for (int i = 0; i < M - 1; i++)
+    {
+        h = (h * base) % prime;
+    }
+
+    for (int i = 0; i < M; i++)
+    {
+        patternHash = (base * patternHash + pattern[i]) % prime;
+    }
+
     std::string line;
     int lineNumber = 0;
     bool found = false;
-    std::string target = toLower(word);
 
-    std::cout << CYAN << "\nSearching for '" << word << "' in " << filePath << "...\n"
-              << RESET;
 
-    while (std::getline(fin, line))
+    while (getline(fin, line))
     {
         lineNumber++;
         std::string lowerLine = toLower(line);
-        if (lowerLine.find(target) != std::string::npos)
+        int N = lowerLine.length();
+
+        if (N < M)
+            continue;
+
+        int textHash = 0;
+
+        // Compute initial hash for first window
+        for (int i = 0; i < M; i++)
         {
-            std::cout << GREEN << "Line " << lineNumber << ": " << RESET << line << "\n";
-            found = true;
+            textHash = (base * textHash + lowerLine[i]) % prime;
+        }
+
+        // Slide over the line
+        for (int i = 0; i <= N - M; i++)
+        {
+            if (textHash == patternHash && lowerLine.substr(i, M) == pattern)
+            {
+                std::cout << GREEN << "Line " << lineNumber << ": " << RESET << line << "\n";
+                found = true;                
+            }
+
+            // Compute rolling hash for next window
+            if (i < N - M)
+            {
+                textHash = (base * (textHash - lowerLine[i] * h) + lowerLine[i + M]) % prime;
+                if (textHash < 0)
+                    textHash += prime;
+            }
         }
     }
 

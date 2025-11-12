@@ -18,14 +18,13 @@ void welcome()
     std::cout << "0: Read a file" << std::endl;
     std::cout << "1: Create a file and edit it" << std::endl;
     std::cout << "2: Open a file and edit it" << std::endl;
-    std::cout << "3: Copy text from file" << std::endl;
-    std::cout << "4: Paste text into file" << std::endl;
-    std::cout << "5: Search in file" << std::endl;
-    std::cout << "6: Display File Statistics" << std::endl; 
-    std::cout << "7: Search and Modify" << std::endl;
-    std::cout << "8: Print this Command Pallete" << std::endl; 
-    std::cout << "9: Check File Similarity" << std::endl;
-    std::cout << "10: Show Recent Files" << RESET << std::endl;
+    std::cout << "3: Copy/Paste text from file" << std::endl;
+    std::cout << "4: Search in file" << std::endl;
+    std::cout << "5: Display File Statistics" << std::endl; 
+    std::cout << "6: Search and Modify" << std::endl;
+    std::cout << "7: Print this Command Pallete" << std::endl; 
+    std::cout << "8: Check File Similarity" << std::endl;
+    std::cout << "9: Show Recent Files" << RESET << std::endl;
  
 
     cleanInput(option);
@@ -170,7 +169,7 @@ void chooseOperation(int option)
             break;
         }
         
-        case 6:
+        case 5:
         {
             std::string fileName;
             std::cout << CYAN << "Enter file name to search: " << RESET;
@@ -183,7 +182,7 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
-        case 7:
+        case 6:
         {
         std::string fileName, findWord, replaceWord, mode;
         std::cout << CYAN << "Enter file name: " << RESET;
@@ -217,7 +216,7 @@ void chooseOperation(int option)
         break;
         }
 
-        case 8:
+        case 7:
         {
             std::cout << MAGENTA << "Welcome to Femto-Text-Editor!" << RESET << std::endl;
             std::cout << YELLOW << "[Tip] Your last line is only saved after pressing Enter!" << RESET << std::endl;
@@ -238,14 +237,14 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
-        case 9:
+        case 8:
         {
             checkFileSimilarity();
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
             cleanInput(option);
             break;
         }
-        case 10:
+        case 9:
         {
             showRecentFiles();
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
