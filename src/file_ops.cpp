@@ -1,6 +1,7 @@
 // This will handle file read & write operations
 #include "file_ops.h"
 #include "autosave.h"
+#include "undo.h"
 #include <csignal>
 
 // Global variables to track active file for autosave
@@ -31,10 +32,10 @@ std::string getAllFileContent(LineNode *head)
 void handleExitSignal(int signal)
 {
     if (!g_activeFile.empty() && g_activeHead)
-     {
+    {
         // if program is terminated unexpectedly, create autosave
         createAutoSave(g_activeFile, getAllFileContent(g_activeHead));
-     }
+    }
 
     std::exit(signal);
 }
@@ -50,44 +51,43 @@ int readFile(std::string fileName)
         std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
         return 1;
     }
- // Check for auto-save backup
+    // Check for auto-save backup
     if (checkAutoSave(fileName))
     {
 
-     while (true)
-     {
-        std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
-        std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
-
-        char c;
-        std::cin >> c;
-
-        // Clear input buffer
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        if (c == 'y' || c == 'Y') 
+        while (true)
         {
-            std::string data = readAutoSave(fileName);
-            std::ofstream restore(fileName);
-            restore << data;
-            restore.close();
-            std::cout << GREEN << " Restored from auto-save.\n" << RESET;
-            break;
-        } 
-        else if (c == 'n' || c == 'N') 
-        {
-            deleteAutoSave(fileName);
-            std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
-            break;
+            std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
+            std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
+
+            char c;
+            std::cin >> c;
+
+            // Clear input buffer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            if (c == 'y' || c == 'Y')
+            {
+                std::string data = readAutoSave(fileName);
+                std::ofstream restore(fileName);
+                restore << data;
+                restore.close();
+                std::cout << GREEN << " Restored from auto-save.\n"
+                          << RESET;
+                break;
+            }
+            else if (c == 'n' || c == 'N')
+            {
+                deleteAutoSave(fileName);
+                std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
+                break;
+            }
+            else
+            {
+                std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
+            }
         }
-        else
-        {
-            std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
-        }
-     }
-
     }
-
 
     std::signal(SIGINT, handleExitSignal);
     std::signal(SIGTERM, handleExitSignal);
@@ -113,10 +113,8 @@ int editFile(std::string fileName)
 }
 int writeFile(std::string fileName, bool editing)
 {
-    // Creating stack for undo-redo ops
-    std::stack<LineNode *> Undo;
-    std::stack<LineNode *> Redo;
-
+    // Creating stack for undo ops
+    std::stack<UndoNode *> undoStack;
     // Setup signal handlers for autosave on unexpected exit
     std::signal(SIGINT, handleExitSignal);
     std::signal(SIGTERM, handleExitSignal);
@@ -133,42 +131,42 @@ int writeFile(std::string fileName, bool editing)
     if (editing)
     {
         // Check for auto-save backup
-     if (checkAutoSave(fileName)) 
-     {
-
-        while (true)
-         {
-            std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
-            std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
-
-            char c;
-            std::cin >> c;
-
-         // Clear input buffer
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        if (c == 'y' || c == 'Y') 
+        if (checkAutoSave(fileName))
         {
-            std::string data = readAutoSave(fileName);
-            std::ofstream restore(fileName);
-            restore << data;
-            restore.close();
-            std::cout << GREEN << " Restored from auto-save.\n" << RESET;
-            break;
-        } 
-        else if (c == 'n' || c == 'N')
-        {  
-            deleteAutoSave(fileName);
-            std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
-            break;
-        }
-        else 
-        {
-            std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
-        }
 
+            while (true)
+            {
+                std::cout << YELLOW << " Auto-save backup found for this file." << RESET << std::endl;
+                std::cout << CYAN << "Do you want to restore it? (y/n): " << RESET;
+
+                char c;
+                std::cin >> c;
+
+                // Clear input buffer
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                if (c == 'y' || c == 'Y')
+                {
+                    std::string data = readAutoSave(fileName);
+                    std::ofstream restore(fileName);
+                    restore << data;
+                    restore.close();
+                    std::cout << GREEN << " Restored from auto-save.\n"
+                              << RESET;
+                    break;
+                }
+                else if (c == 'n' || c == 'N')
+                {
+                    deleteAutoSave(fileName);
+                    std::cout << MAGENTA << " Auto-save deleted." << RESET << std::endl;
+                    break;
+                }
+                else
+                {
+                    std::cout << RED << " Invalid choice! Please enter y or n." << RESET << std::endl;
+                }
+            }
         }
-     }
 
         // store the pre-existing lines in linked list
         //  Open the text file
@@ -220,9 +218,9 @@ int writeFile(std::string fileName, bool editing)
     {
         std::cout << ++currentLine << ": ";
         std::getline(std::cin, line);
-        if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d" and line != "/D")
+        if (line != "/cmd" and line != "/i" and line != "/e" and line != "/d" and line != "/D" and line != "/u")
         {
-           
+
             if (!linesHead)
             {
                 linesHead = new LineNode(line);
@@ -244,17 +242,30 @@ int writeFile(std::string fileName, bool editing)
                 current = current->nextLine;
             }
             // Update global head for autosave
+            UndoNode *node = new UndoNode('w', currentLine);
+            undoStack.push(node);
             createAutoSave(fileName, getAllFileContent(linesHead));
         }
         else if (line == "/u")
         {
             // Implemnting undo
-            std::cout << "Unimplemented feature!" << std::endl;
+
+            if (!undoStack.empty())
+            {
+
+                UndoNode *operation = undoStack.top();
+                // Perform necessary undo operation
+                performUndo(operation, linesHead, current);
+                undoStack.pop();
+                currentLine = traverseAndPrint(linesHead);
+            }
+            else
+            {
+                std::cout << RED << "Nothing to Undo!" << RESET << std::endl;
+                --currentLine;
+            }
         }
-        else if (line == "/r")
-        {
-            std::cout << "Unimplemented feature!" << std::endl;
-        }
+
         else if (line == "/D")
         {
             // If delete flag triggered get line number to delete
@@ -274,13 +285,17 @@ int writeFile(std::string fileName, bool editing)
                 {
                     // Delete Line
                     LineNode *deletedLine = linesHead;
+                    std::string deleteString = deletedLine->line;
                     linesHead = linesHead->nextLine;
                     delete deletedLine;
                     --currentLine;
                     current = nullptr;
+                    UndoNode *node = new UndoNode('D', 1, deleteString);
+                    undoStack.push(node);
                 }
                 else
                 {
+                    std::string deleteString;
                     for (int i = 1; i < std::max(1, lineNumber - 1); ++i)
                     {
                         if (!lineFinder->nextLine)
@@ -294,6 +309,7 @@ int writeFile(std::string fileName, bool editing)
                     }
                     // Delete line
                     LineNode *deletedLine = lineFinder->nextLine;
+
                     // If we deleting last line then deletedLine == nullptr
                     if (!deletedLine)
                     {
@@ -307,11 +323,21 @@ int writeFile(std::string fileName, bool editing)
                             starter = starter->nextLine;
                         }
                         starter->nextLine = nullptr;
+                        // Pushing the deleted string to stack
+                        deleteString = lineFinder->line;
+                        UndoNode *node = new UndoNode('D', lineNumber, deleteString);
+                        undoStack.push(node);
+                        // Deleting line from linked list
                         delete lineFinder;
                     }
                     else
                     {
+                        // Pushing the deleted string to stack
+                        deleteString = deletedLine->line;
+                        UndoNode *node = new UndoNode('D', lineNumber, deleteString);
+                        undoStack.push(node);
                         lineFinder->nextLine = deletedLine->nextLine;
+                        // Deleteing line from linked list
                         delete deletedLine;
                     }
                     --currentLine;
@@ -328,82 +354,86 @@ int writeFile(std::string fileName, bool editing)
         }
         // delete a range of lines
         else if (line == "/d")
-{
-    if (!linesHead)
-    {
-        std::cout << RED << "Nothing to delete!" << RESET << std::endl;
-        --currentLine;
-    }
-    else
-    {
-        int startLine, endLine;
-        std::cout << GREEN << "Enter starting and ending line numbers to delete (e.g., 3 8): " << RESET;
-        
-        // Check if input extraction was successful
-        if (!(std::cin >> startLine >> endLine))
         {
-            std::cout << RED << "Invalid input! Please enter numbers only." << RESET << std::endl;
-            std::cin.clear(); // Clear the error flags
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
-            currentLine = traverseAndPrint(linesHead);
-            current = nullptr;
-            continue;
+            if (!linesHead)
+            {
+                std::cout << RED << "Nothing to delete!" << RESET << std::endl;
+                --currentLine;
+            }
+            else
+            {
+                int startLine, endLine;
+                std::cout << GREEN << "Enter starting and ending line numbers to delete (e.g., 3 8): " << RESET;
+                std::vector<std::string> deletedLines;
+                // Check if input extraction was successful
+                if (!(std::cin >> startLine >> endLine))
+                {
+                    std::cout << RED << "Invalid input! Please enter numbers only." << RESET << std::endl;
+                    std::cin.clear();                                                   // Clear the error flags
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
+                    currentLine = traverseAndPrint(linesHead);
+                    current = nullptr;
+                    continue;
+                }
+
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
+
+                if (startLine > endLine)
+                    std::swap(startLine, endLine);
+                if (startLine < 1)
+                    startLine = 1;
+
+                LineNode *temp = linesHead;
+                LineNode *prev = nullptr;
+                int lineNum = 1;
+
+                // Move to the start line
+                while (temp && lineNum < startLine)
+                {
+                    prev = temp;
+                    temp = temp->nextLine;
+                    ++lineNum;
+                }
+
+                // Nothing to delete
+                if (!temp)
+                {
+                    std::cout << RED << "Invalid range!" << RESET << std::endl;
+                    currentLine = traverseAndPrint(linesHead);
+                    createAutoSave(fileName, getAllFileContent(linesHead));
+                    current = nullptr;
+                    continue;
+                }
+
+                // Delete from startLine to endLine
+                LineNode *afterEnd = temp;
+                while (afterEnd && lineNum <= endLine)
+                {
+                    LineNode *toDelete = afterEnd;
+                    // Puttting deleted line string to vector to undo
+                    deletedLines.push_back(toDelete->line);
+                    afterEnd = afterEnd->nextLine;
+                    delete toDelete;
+                    ++lineNum;
+                }
+
+                // Reconnect linked list
+                if (prev)
+                    prev->nextLine = afterEnd;
+                else
+                    linesHead = afterEnd;
+
+                std::cout << GREEN << "Deleted lines from " << startLine << " to " << endLine << "." << RESET << std::endl;
+                // Put start end line and vector to undo stack
+                UndoNode *node = new UndoNode('d', startLine, "", endLine, deletedLines);
+                undoStack.push(node);
+                // Reprint updated file
+                currentLine = traverseAndPrint(linesHead);
+                g_activeHead = linesHead;
+                createAutoSave(fileName, getAllFileContent(g_activeHead));
+                current = nullptr;
+            }
         }
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // clear buffer
-
-        if (startLine > endLine)
-            std::swap(startLine, endLine);
-        if (startLine < 1)
-            startLine = 1;
-
-        LineNode* temp = linesHead;
-        LineNode* prev = nullptr;
-        int lineNum = 1;
-
-        // Move to the start line
-        while (temp && lineNum < startLine)
-        {
-            prev = temp;
-            temp = temp->nextLine;
-            ++lineNum;
-        }
-
-        // Nothing to delete
-        if (!temp)
-        {
-            std::cout << RED << "Invalid range!" << RESET << std::endl;
-            currentLine = traverseAndPrint(linesHead);
-            createAutoSave(fileName, getAllFileContent(linesHead));
-            current = nullptr;
-            continue;
-        }
-
-        // Delete from startLine to endLine
-        LineNode* afterEnd = temp;
-        while (afterEnd && lineNum <= endLine)
-        {
-            LineNode* toDelete = afterEnd;
-            afterEnd = afterEnd->nextLine;
-            delete toDelete;
-            ++lineNum;
-        }
-
-        // Reconnect linked list
-        if (prev)
-            prev->nextLine = afterEnd;
-        else
-            linesHead = afterEnd;
-
-        std::cout << GREEN << "Deleted lines from " << startLine << " to " << endLine << "." << RESET << std::endl;
-
-        // Reprint updated file
-        currentLine = traverseAndPrint(linesHead);
-        createAutoSave(fileName, getAllFileContent(linesHead));
-        current = nullptr;
-    }
-}
-
 
         else if (line == "/i")
         {
@@ -417,6 +447,9 @@ int writeFile(std::string fileName, bool editing)
                 std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 std::getline(std::cin, line);
+                // Pushing linenum to undostack
+                UndoNode *node = new UndoNode('i', lineNumber);
+                undoStack.push(node);
                 linesHead = new LineNode(line);
                 current = linesHead;
                 currentLine = traverseAndPrint(linesHead);
@@ -453,6 +486,11 @@ int writeFile(std::string fileName, bool editing)
                     insertedLine->nextLine = lineFinder->nextLine;
                     lineFinder->nextLine = insertedLine;
                 }
+
+                // Pushing linenum to undostack
+                UndoNode *node = new UndoNode('i', lineNumber);
+                undoStack.push(node);
+
                 // Reprint contents
                 currentLine = traverseAndPrint(linesHead);
                 // Update global head for autosave
@@ -484,8 +522,8 @@ int writeFile(std::string fileName, bool editing)
             // Delete autosave on normal exit
             deleteAutoSave(fileName);
             // Reset global autosave trackers
-             g_activeFile = "";
-    g_activeHead = nullptr;
+            g_activeFile = "";
+            g_activeHead = nullptr;
         }
         else if (line == "/e")
         {
@@ -500,6 +538,9 @@ int writeFile(std::string fileName, bool editing)
                 std::cout << GREEN << "Input the line:" << RESET << std::endl;
                 std::cout << std::max(1, std::min(lineNumber, currentLine)) << ": ";
                 std::getline(std::cin, line);
+                // Pushing linenum to undostack
+                UndoNode *node = new UndoNode('e', lineNumber, "");
+                undoStack.push(node);
                 linesHead = new LineNode(line);
                 current = linesHead;
                 currentLine = traverseAndPrint(linesHead);
@@ -513,6 +554,9 @@ int writeFile(std::string fileName, bool editing)
                 {
                     // Get the new line
                     std::getline(std::cin, line);
+                    // Pushing linenum to undostack
+                    UndoNode *node = new UndoNode('e', lineNumber, linesHead->line);
+                    undoStack.push(node);
                     linesHead->line = line;
                 }
                 else
@@ -529,6 +573,9 @@ int writeFile(std::string fileName, bool editing)
                     }
                     // Get the new line
                     std::getline(std::cin, line);
+                    // Pushing linenum to undostack
+                    UndoNode *node = new UndoNode('e', lineNumber, lineFinder->line);
+                    undoStack.push(node);
                     lineFinder->line = line;
                 }
                 currentLine = traverseAndPrint(linesHead);

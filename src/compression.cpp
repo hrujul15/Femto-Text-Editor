@@ -136,7 +136,7 @@ int readFileforCompression()
     }
     std::cout << RESET;
 
-    while (heap.size() != 1)
+    while (heap.size() != 1 and heap.size() != 0)
     {
         Node *left = heap.top();
         heap.pop();
@@ -144,6 +144,12 @@ int readFileforCompression()
         heap.pop();
         Node *newer = new Node('$', left->freq + right->freq, left, right);
         heap.push(newer);
+    }
+    // Empty heap that is provided file is empty!
+    if (heap.empty())
+    {
+        std::cout << RED << "This file is either empty or in a format that cannot be read." << RESET << std::endl;
+        return 1;
     }
     Node *root = heap.top();
 

@@ -61,8 +61,15 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to create and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
-            writeFile(fileName);
+            std::cout << CYAN
+                      << "Type\n"
+                      << "/cmd: to return to main menu\n"
+                      << "/e:   to edit a particular line\n"
+                      << "/i:   to insert a line at a particular line number\n"
+                      << "/d:   to delete a range of lines\n"
+                      << "/D:   to delete a single line\n"
+                      << "/u:   to undo the last operation"
+                      << RESET << std::endl;
             addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
@@ -75,7 +82,16 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to open and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN << "Type /cmd to return to main menu\n/e edit a particular line\n/i to insert a line at particular line number\n/d to delete a range of line\n/D to delete a single line" << RESET << std::endl;
+            std::cout << CYAN
+                      << "Type\n"
+                      << "/cmd: to return to main menu\n"
+                      << "/e:   to edit a particular line\n"
+                      << "/i:   to insert a line at a particular line number\n"
+                      << "/d:   to delete a range of lines\n"
+                      << "/D:   to delete a single line\n"
+                      << "/u:   to undo the last operation"
+                      << RESET << std::endl;
+
             editFile(fileName);
             addRecentFile(fileName);
             // Do more operations

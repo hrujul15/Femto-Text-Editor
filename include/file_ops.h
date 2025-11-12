@@ -13,16 +13,7 @@ int writeFile(std::string fileName, bool editing = false);
 int editFile(std::string fileName);
 
 // Linked List Node
-struct LineNode
-{
-    std::string line;
-    LineNode *nextLine = nullptr;
-    LineNode(std::string line)
-    {
-        this->line = line;
-        nextLine = nullptr;
-    }
-};
+
 
 int traverseAndPrint(LineNode *trav);
 
