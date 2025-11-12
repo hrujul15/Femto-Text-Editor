@@ -61,15 +61,8 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to create and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN
-                      << "Type\n"
-                      << "/cmd: to return to main menu\n"
-                      << "/e:   to edit a particular line\n"
-                      << "/i:   to insert a line at a particular line number\n"
-                      << "/d:   to delete a range of lines\n"
-                      << "/D:   to delete a single line\n"
-                      << "/u:   to undo the last operation"
-                      << RESET << std::endl;
+
+            writeFile(fileName);
             addRecentFile(fileName);
             // Do more operations
             std::cout << CYAN << "Please choose an operation to perform: " << RESET;
@@ -82,15 +75,6 @@ void chooseOperation(int option)
             std::cout << CYAN << "Type the path to the file to open and edit: " << RESET << std::endl;
             std::cin >> fileName;
             std::cin.ignore(); // To clear input buffer
-            std::cout << CYAN
-                      << "Type\n"
-                      << "/cmd: to return to main menu\n"
-                      << "/e:   to edit a particular line\n"
-                      << "/i:   to insert a line at a particular line number\n"
-                      << "/d:   to delete a range of lines\n"
-                      << "/D:   to delete a single line\n"
-                      << "/u:   to undo the last operation"
-                      << RESET << std::endl;
 
             editFile(fileName);
             addRecentFile(fileName);
@@ -242,7 +226,7 @@ void chooseOperation(int option)
             std::cout << "0: Read a file" << std::endl;
             std::cout << "1: Create a file and edit it" << std::endl;
             std::cout << "2: Open a file and edit it" << std::endl;
-            std::cout << "3: Copy/Paste text from file" << std::endl;
+            std::cout << "3: Copy/Paste tesxt from file" << std::endl;
             std::cout << "4: Search in file" << std::endl;
             std::cout << "5: Display File Statistics" << std::endl;
             std::cout << "6: Search and Modify" << std::endl;
@@ -251,7 +235,7 @@ void chooseOperation(int option)
             std::cout << "9: Show Recent Files" << std::endl;
             std::cout << "10: Compress a Large File" << std::endl;
             std::cout << "11: De-Compress a Large File" << RESET << std::endl;
-
+            std::cout << BLUE << "Please choose an operation to perform:" << std::endl;
             cleanInput(option);
             break;
         }

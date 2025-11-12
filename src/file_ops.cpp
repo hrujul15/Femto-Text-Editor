@@ -167,14 +167,22 @@ int writeFile(std::string fileName, bool editing)
                 }
             }
         }
-
+        std::cout << CYAN
+                  << "Type\n"
+                  << "/cmd: to return to main menu\n"
+                  << "/e:   to edit a particular line\n"
+                  << "/i:   to insert a line at a particular line number\n"
+                  << "/d:   to delete a range of lines\n"
+                  << "/D:   to delete a single line\n"
+                  << "/u:   to undo the last operation"
+                  << RESET << std::endl;
         // store the pre-existing lines in linked list
         //  Open the text file
         std::ifstream file(fileName);
         // Error opening the file
         if (!file.is_open())
         {
-            std::cerr << RED << " Error Opening the File!!!" << RESET << std::endl;
+            std::cerr << RED << "Error Opening the File!!!" << RESET << std::endl;
             return 1;
         }
         // Storing contents of a line in a string then printing it
@@ -595,7 +603,7 @@ int traverseAndPrint(LineNode *trav)
     std::cout << std::endl;
     while (trav)
     {
-        std::cout << ++travLine << ": ";
+        std::cout << GREY << ++travLine << ": " << RESET;
         std::cout << trav->line << std::endl;
         trav = trav->nextLine;
     }

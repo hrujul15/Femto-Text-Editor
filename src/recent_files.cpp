@@ -15,7 +15,7 @@ void addRecentFile(const std::string &fileName)
     if (!file.is_open())
     {
         std::cout << RED << "Warning: '" << fileName 
-                  << "' does not exist.Skipping from recent list." << RESET << std::endl;
+                  << "' does not exist. Skipping from recent list." << RESET << std::endl;
         return;
     }
     file.close();
