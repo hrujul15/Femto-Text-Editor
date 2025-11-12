@@ -29,7 +29,7 @@ void copyFromFile(const std::string &filePath, int startLine, int endLine)
         lineCount++;
     }
     fin.close();
-    std::cout << GREEN << "Copied " << clipboardBuffer.size() << " lines to clipboard.\n"
+    std::cout << GREEN << "Copied " << clipboardBuffer.size() << " lines to buffer.\n"
               << RESET;
 }
 
@@ -38,7 +38,7 @@ void pasteToFile(const std::string &filePath, int lineNumber)
 {
     if (clipboardBuffer.empty())
     {
-        std::cout << RED << "Clipboard is empty!\n"
+        std::cout << RED << "Buffer is empty!\n"
                   << RESET;
         return;
     }
@@ -71,6 +71,6 @@ void pasteToFile(const std::string &filePath, int lineNumber)
         fout << l << "\n";
     fout.close();
 
-    std::cout << GREEN << "Pasted clipboard contents into " << filePath << " at line " << lineNumber << ".\n"
+    std::cout << GREEN << "Pasted buffer contents into " << filePath << " at line " << lineNumber << ".\n"
               << RESET;
 }
