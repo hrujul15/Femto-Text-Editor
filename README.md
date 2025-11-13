@@ -16,16 +16,18 @@ A CLI-based text editor written in **C++**
 
 ---
 
-## 🚀 Features
+## Features
 
-* ✅ **Edit / Insert / Delete Lines**
-* ✅ **Undo Operations**
-* ✅ **Copy / Paste Buffer Between Files**
-* ✅ **Various File Statistics**
-* ✅ **File Similarity Checker**
-* ✅ **Find, Search, and Replace**
-* ✅ **File Compression for Large Text Files**
-* ✅ **Recent Files Opened**
-* ✅ **Autosave on Unexpected Program Exit**
+* **Edit / Insert / Delete Lines**
+* **Undo Operations**
+* **Copy / Paste Buffer Between Files**
+* **Various File Statistics**
+* **File Similarity Checker**
+* **Find, Search, and Replace**
+* **File Compression for Large Text Files**
+* **Recent Files Opened**
+* **Autosave on Unexpected Program Exit**
 
 ---
+## Running the Program
+- If SmartScreen blocks the executable, select **More info → Run anyway**.

@@ -167,15 +167,7 @@ int writeFile(std::string fileName, bool editing)
                 }
             }
         }
-        std::cout << CYAN
-                  << "Type\n"
-                  << "/cmd: to return to main menu\n"
-                  << "/e:   to edit a particular line\n"
-                  << "/i:   to insert a line at a particular line number\n"
-                  << "/d:   to delete a range of lines\n"
-                  << "/D:   to delete a single line\n"
-                  << "/u:   to undo the last operation"
-                  << RESET << std::endl;
+
         // store the pre-existing lines in linked list
         //  Open the text file
         std::ifstream file(fileName);
