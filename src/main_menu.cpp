@@ -19,15 +19,15 @@ void welcome()
     std::cout << "0: Read a file" << std::endl;
     std::cout << "1: Create a file and edit it" << std::endl;
     std::cout << "2: Open a file and edit it" << std::endl;
-    std::cout << "3: Copy/Paste text from file" << std::endl;
+    std::cout << "3: Copy/Paste tesxt from file" << std::endl;
     std::cout << "4: Search in file" << std::endl;
-    std::cout << "5: Display File Statistics" << std::endl; 
+    std::cout << "5: Display File Statistics" << std::endl;
     std::cout << "6: Search and Modify" << std::endl;
-    std::cout << "7: Print this Command Pallete" << std::endl; 
+    std::cout << "7: Print this Command Pallete" << std::endl;
     std::cout << "8: Check File Similarity" << std::endl;
-    std::cout << "9: Show Recent Files" << RESET << std::endl;
- 
-
+    std::cout << "9: Show Recent Files" << std::endl;
+    std::cout << "10: Compress a Large File" << std::endl;
+    std::cout << "11: De-Compress a Large File" << RESET << std::endl;
     cleanInput(option);
     chooseOperation(option);
 }
@@ -169,7 +169,7 @@ void chooseOperation(int option)
             cleanInput(option);
             break;
         }
-        
+
         case 5:
         {
             std::string fileName;
@@ -185,36 +185,36 @@ void chooseOperation(int option)
         }
         case 6:
         {
-        std::string fileName, findWord, replaceWord, mode;
-        std::cout << CYAN << "Enter file name: " << RESET;
-        std::cin >> fileName;
+            std::string fileName, findWord, replaceWord, mode;
+            std::cout << CYAN << "Enter file name: " << RESET;
+            std::cin >> fileName;
 
-        std::cout << YELLOW << "Choose mode (/r = find & replace, /! = find & delete): " << RESET;
-        std::cin >> mode;
+            std::cout << YELLOW << "Choose mode (/r = find & replace, /! = find & delete): " << RESET;
+            std::cin >> mode;
 
-        if (mode == "/r")
-        {
-        std::cout << CYAN << "Enter word to find: " << RESET;
-        std::cin >> findWord;
-        std::cout << CYAN << "Enter word to replace it with: " << RESET;
-        std::cin >> replaceWord;
-        findAndReplaceInFile(fileName, findWord, replaceWord); 
-        }
-        else if (mode == "/!")
-        {
-        std::cout << CYAN << "Enter word to delete (case-sensitive): " << RESET;
-        std::cin >> findWord;
-        deleteWordFromFile(fileName, findWord); 
-        }
-        
-        else
-        {
-        std::cout << RED << "Invalid mode! Use /r or /!." << RESET << std::endl;
-        }
-        addRecentFile(fileName);
-        std::cout << CYAN << "Please choose an operation to perform: " << RESET;
-        cleanInput(option);
-        break;
+            if (mode == "/r")
+            {
+                std::cout << CYAN << "Enter word to find: " << RESET;
+                std::cin >> findWord;
+                std::cout << CYAN << "Enter word to replace it with: " << RESET;
+                std::cin >> replaceWord;
+                findAndReplaceInFile(fileName, findWord, replaceWord);
+            }
+            else if (mode == "/!")
+            {
+                std::cout << CYAN << "Enter word to delete (case-sensitive): " << RESET;
+                std::cin >> findWord;
+                deleteWordFromFile(fileName, findWord);
+            }
+
+            else
+            {
+                std::cout << RED << "Invalid mode! Use /r or /!." << RESET << std::endl;
+            }
+            addRecentFile(fileName);
+            std::cout << CYAN << "Please choose an operation to perform: " << RESET;
+            cleanInput(option);
+            break;
         }
 
         case 7:
@@ -235,7 +235,7 @@ void chooseOperation(int option)
             std::cout << "9: Show Recent Files" << std::endl;
             std::cout << "10: Compress a Large File" << std::endl;
             std::cout << "11: De-Compress a Large File" << RESET << std::endl;
-            std::cout << BLUE << "Please choose an operation to perform:" << std::endl;
+            std::cout << BLUE << "Please choose an operation to perform:" << RESET << std::endl;
             cleanInput(option);
             break;
         }

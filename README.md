@@ -29,8 +29,3 @@ A CLI-based text editor written in **C++**
 * ✅ **Autosave on Unexpected Program Exit**
 
 ---
-
-## 🧱 Supported Platforms
-
-* Windows 10 / 11
-* Arch Linux

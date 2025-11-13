@@ -17,7 +17,6 @@ int readFromBinary()
     }
 
     std::string line;
-
     // New Map to access the codes for the specfic char
     std::unordered_map<std::string, char> codeChar;
     int padding = 0;
@@ -26,20 +25,47 @@ int readFromBinary()
     {
 
         if (line == "===")
+        {
             break;
+        }
         int space_pos = line.find(" ");
         if (line.substr(0, space_pos) == "PADDING")
         {
-            padding = stoi(line.substr(space_pos + 1, line.size()));
+            try
+            {
+                padding = stoi(line.substr(space_pos + 1, line.size()));
+            }
+            catch (std::invalid_argument &)
+            {
+                std::cerr << RED << "This binary file cannot be de-compressed" << RESET << std::endl;
+                return 1;
+            }
+            catch (std::out_of_range &)
+            {
+                std::cerr << RED << "This binary file cannot be de-compressed" << RESET << std::endl;
+                return 1;
+            }
         }
         else
         {
-            char character = stoi(line.substr(0, space_pos));
-            std::string code = line.substr(space_pos + 1, line.size());
-            codeChar[code] = character;
+            try
+            {
+                char character = stoi(line.substr(0, space_pos));
+                std::string code = line.substr(space_pos + 1, line.size());
+                codeChar[code] = character;
+            }
+            catch (std::invalid_argument &)
+            {
+                std::cerr << RED << "This binary file cannot be de-compressed" << RESET << std::endl;
+                return 1;
+            }
+            catch (std::out_of_range &)
+            {
+                std::cerr << RED << "This binary file cannot be de-compressed" << RESET << std::endl;
+                return 1;
+            }
         }
     }
-
     // Getting the binary text line!
     // storing text in buffer
     std::string buffer;
